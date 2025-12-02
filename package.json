@@ -1,0 +1,17 @@
+{
+  "name": "estadia(cuerpo-academico)",
+  "version": "1.0.0",
+  "main": "login.js",
+  "scripts": {
+    "start": "node login.js", 
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "express": "^5.1.0",
+    "pg": "^8.16.3"
+  }
+}

@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="Conocimiento.css">
+    <link rel="stylesheet" href="CA.css">
+    <link rel="stylesheet" href="style.css">
+    <title>Lineas de Conocimiento</title>
+</head>
+<body>
+
+    <nav>
+        <div class="brand">
+            <img src="img/logo-ca.jpg" alt="">
+            <a href="#" class="logo">Cuerpo Académico</a>
+        </div>
+        <div class="links">
+            <a href="#" onclick="window.location.href='index.html'">Inicio</a>
+            <a href="#que-es" onclick="window.location.href='CA.html'">Qué es CA?</a>
+            <a href="#lineas" onclick="window.location.href='Conocimientos.html'">Líneas de Conocimiento</a>
+            <a href="#noticias" onclick="window.location.href='Noticias.html'">Noticias y mas</a>
+            <a href="#Sitios" onclick="window.location.href='Sitios.html'">Proyectos</a>
+        </div>
+        <div class="nav-bar">
+            <div id="auth-link">
+                <a href="login.html" class="login-button">Iniciar Sesión</a>
+            </div>
+        </div>
+    </nav>
+
+    <section id="research-lines" class="research-section">
+    <div class="container">
+        <div class="tab-container">
+            <div class="tabs-nav">
+                <button class="tab-button active" onclick="openTab(event, 'tab1')">Línea 1</button>
+                <button class="tab-button" onclick="openTab(event, 'tab2')">Línea 2</button>
+                <button class="tab-button" onclick="openTab(event, 'tab3')">Línea 3</button>
+            </div>
+
+            <div id="tab1" class="tab-content show">
+                <h3>1. Procesamiento de datos y modelos avanzados para la innovación y la toma de decisiones</h3>
+                <p><strong>Descripción:</strong> Esta línea se centra en el desarrollo, implementación y optimización de algoritmos avanzados para el procesamiento y análisis de grandes volúmenes de datos (Big Data). Incluye modelos de inteligencia artificial (IA) y aprendizaje automático (Machine Learning) para automatizar procesos, identificar patrones y mejorar la toma de decisiones en diversos sectores, como la educación, la salud, la industria y los negocios.</p>
+                <p><strong>Temas incluidos:</strong></p>
+                <ul>
+                    <li>Diseño y entrenamiento de modelos de IA para predicción y clasificación.</li>
+                    <li>Visualización y análisis de datos complejos.</li>
+                    <li>Uso de Big Data para resolver problemas sociales, económicos y educativos.</li>
+                    <li>Integración de IA en sistemas de gestión empresarial para optimización.</li>
+                </ul>
+            </div>
+
+            <div id="tab2" class="tab-content">
+                <h3>2. TECNOLOGÍAS INMERSIVAS E INTEGRACIÓN DE SISTEMAS PARA LA TRANSFORMACIÓN DIGITAL</h3>
+                <p><strong>Descripción:</strong> Se enfoca en el diseño y aplicación de tecnologías inmersivas (realidad aumentada y virtual) para mejorar procesos de capacitación, simulación y mantenimiento. También aborda la integración de sistemas verticales y horizontales para la digitalización y automatización de procesos organizacionales, fomentando una transformación digital eficiente y sostenible.</p>
+                <p><strong>Temas incluidos:</strong></p>
+                <ul>
+                    <li>Desarrollo de aplicaciones de realidad aumentada para simulaciones y educación interactiva.</li>
+                    <li>Diseño de sistemas interconectados para optimizar flujos de trabajo y comunicación organizacional.</li>
+                    <li>Estudio de gemelos digitales como herramienta de mejora continua en procesos industriales.</li>
+                    <li>Evaluación del impacto de la realidad aumentada en la productividad y el aprendizaje.</li>
+                </ul>
+            </div>
+
+            <div id="tab3" class="tab-content">
+                <h3>3. COGNICIÓN, CREATIVIDAD Y REENTRENAMIENTO EN LA ERA DE LAS TECNOLOGÍAS EMERGENTES</h3>
+                <p><strong>Descripción:</strong> Explora cómo las tecnologías avanzadas, como la IA y las plataformas digitales, pueden potenciar la creatividad, el aprendizaje y el pensamiento crítico. Promueve el diseño de programas de educación y reentrenamiento para preparar a la fuerza laboral en la adopción y uso de tecnologías emergentes, garantizando la adaptación a los cambios tecnológicos y sociales.</p>
+                <p><strong>Temas incluidos:</strong></p>
+                <ul>
+                    <li>Uso de IA para el desarrollo de herramientas educativas personalizadas.</li>
+                    <li>Diseño de estrategias de reentrenamiento laboral basadas en tecnologías digitales.</li>
+                    <li>Análisis del impacto de la automatización en las habilidades humanas y la creatividad.</li>
+                    <li>Desarrollo de programas que combinen habilidades técnicas y blandas (soft skills) para el futuro del trabajo.</li>
+                </ul>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<footer class="site-footer">
+        <div class="container">
+            <p>&copy; 2025 Cuerpo Académico Tecnologías en Seguridad Informática</p>
+            <p>Universidad Tecnológica de Chihuahua</p>
+        </div>
+</footer>
+
+<script src="Script.js"></script>
+
+ <script>
+
+        document.addEventListener('DOMContentLoaded', () => {
+    const authLinkContainer = document.getElementById('auth-link');
+    const userLoggedIn = localStorage.getItem('userLoggedIn');
+    const userEmail = localStorage.getItem('userEmail');
+    const urlParams = new URLSearchParams(window.location.search);
+
+    if (urlParams.get('login') === 'success') {
+        const cleanUrl = window.location.origin + window.location.pathname;
+        window.location.replace(cleanUrl);
+        return;
+    }
+
+    if (userLoggedIn === 'true') {
+        // Si el usuario ha iniciado sesión, crea el menú desplegable de perfil
+        const profileDropdown = document.createElement('div');
+        profileDropdown.className = 'profile-dropdown';
+        
+        const profileButton = document.createElement('button');
+        profileButton.className = 'profile-button';
+        profileButton.textContent = `Hola, ${userEmail.split('@')[0]} ▼`;
+        
+        const dropdownContent = document.createElement('div');
+        dropdownContent.className = 'dropdown-content';
+        
+        const viewProfileLink = document.createElement('a');
+        viewProfileLink.href = 'perfil.html';
+        viewProfileLink.textContent = 'Ver Perfil';
+        
+        const logoutButton = document.createElement('button');
+        logoutButton.textContent = 'Cerrar Sesión';
+        logoutButton.className = 'logout-button-menu';
+        logoutButton.addEventListener('click', () => {
+            localStorage.clear();
+            window.location.reload();
+        });
+        
+        dropdownContent.appendChild(viewProfileLink);
+        dropdownContent.appendChild(logoutButton);
+        
+        profileDropdown.appendChild(profileButton);
+        profileDropdown.appendChild(dropdownContent);
+        
+        authLinkContainer.innerHTML = '';
+        authLinkContainer.appendChild(profileDropdown);
+
+        profileButton.addEventListener('click', () => {
+            dropdownContent.classList.toggle('show-dropdown');
+        });
+
+        window.onclick = function(event) {
+            if (!event.target.matches('.profile-button')) {
+                const dropdowns = document.getElementsByClassName('dropdown-content');
+                for (let i = 0; i < dropdowns.length; i++) {
+                    const openDropdown = dropdowns[i];
+                    if (openDropdown.classList.contains('show-dropdown')) {
+                        openDropdown.classList.remove('show-dropdown');
+                    }
+                }
+            }
+        };
+
+    } else {
+        // Si no hay sesión, muestra el botón de "Iniciar Sesión"
+        authLinkContainer.innerHTML = '<a href="login.html" class="login-button">Iniciar Sesión</a>';
+    }
+});
+
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,186 @@
+/* --- Estilos para la página de Noticias y más --- */
+body, html {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    min-height: 100%;
+}
+
+.noticias-main {
+    padding: 60px 20px;
+    background-color: #f8f9fa;
+}
+
+.noticias-container {
+    max-width: 900px;
+    margin: 0 auto;
+    background-color: #fff;
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.noticias-section {
+    margin-bottom: 40px;
+}
+
+.noticias-section h2 {
+    color: #004d80;
+    font-size: 2em;
+    border-bottom: 2px solid #ff9900;
+    padding-bottom: 5px;
+    margin-bottom: 20px;
+}
+
+.noticia-item, .evento-item {
+    padding: 20px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    transition: box-shadow 0.3s ease;
+}
+
+.noticia-item:hover, .evento-item:hover {
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.noticia-item h3, .evento-item h3 {
+    margin-top: 0;
+    color: #333;
+}
+
+.noticia-item p, .evento-item p {
+    color: #555;
+    line-height: 1.6;
+}
+
+.read-more {
+    display: inline-block;
+    background-color: #004d80;
+    color: white;
+    padding: 8px 15px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: bold;
+    margin-top: 10px;
+    transition: background-color 0.3s ease;
+}
+
+.read-more:hover {
+    background-color: #58a1ea;
+}
+
+/* --- Estilos para el panel de administración --- */
+#admin-panel {
+    background-color: #f0f2f5;
+    padding: 20px;
+    border-radius: 8px;
+    margin: 20px auto;
+    max-width: 900px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    text-align: center;
+}
+
+.admin-controls {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.admin-button {
+    background-color: #115b90c2;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.3s;
+}
+
+.admin-button:hover {
+    background-color: #58a1ea;
+}
+
+.noticia-item {
+    position: relative; /* Para posicionar los botones */
+}
+
+.edit-buttons {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    display: flex;
+    gap: 5px;
+}
+
+.edit-button, .delete-button {
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 5px 8px;
+    cursor: pointer;
+    font-size: 0.8em;
+    transition: background-color 0.3s;
+}
+
+.edit-button:hover {
+    background-color: #ffc107;
+}
+
+.delete-button:hover {
+    background-color: #dc3545;
+    color: white;
+}
+
+/* --- Estilos para la Sección de Códigos QR --- */
+.social-qr-section {
+    text-align: center;
+    margin-bottom: 50px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #eee;
+}
+
+.social-qr-section h2 {
+    color: #004d80;
+    font-size: 2em;
+    margin-bottom: 10px;
+    border-bottom: none; /* Quitamos la línea para que no compita con la línea de la sección */
+}
+
+.qr-grid {
+    display: flex;
+    justify-content: center;
+    gap: 40px; /* Espacio entre los códigos QR */
+    flex-wrap: wrap; /* Asegura que se apilen en móviles */
+    margin-top: 30px;
+}
+
+.qr-item {
+    background-color: #f7f7f7;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    width: 280px; /* Ancho fijo para las tarjetas */
+}
+
+.qr-item h3 {
+    color: #333;
+    margin-top: 0;
+    margin-bottom: 15px;
+}
+
+.qr-code {
+    width: 200px; /* Tamaño del QR */
+    height: 200px;
+    border: 5px solid white; /* Borde blanco para resaltar el QR */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    border-radius: 5px;
+}
+
+.qr-link {
+    font-weight: 600;
+    color: #004d80;
+    margin-top: 15px;
+}

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="login.css">
+    <title>Login / Registro</title>
+</head>
+
+<body>
+
+    <div class="container" id="container">
+        <div class="form-container sign-up">
+            <form id="register-form">
+                <h1>Crear Cuenta</h1>
+                <br>
+                <input type="text" placeholder="Nombre" required>
+                <input type="email" id="reg-email" placeholder="Correo electrónico" required>
+                <input type="text" placeholder="Universidad" required>
+                <input type="text" placeholder="Ciudad/Estado" required>
+                <input type="text" placeholder="Línea de Investigación" required>
+                <input type="url" placeholder="Perfil de Google (URL)">
+                <input type="text" placeholder="ORCID (ej: 0000-0000-0000-0000)">
+                <input type="password" id="reg-password" placeholder="Contraseña" required>
+                <input type="password" id="confirm-password" placeholder="Confirmar Contraseña" required>
+                <button type="submit">Registrarse</button>
+                <p id="register-error" class="error-message"></p>
+            </form>
+        </div>
+
+        <div class="form-container sign-in">
+            <form id="login-form">
+                <h1>Iniciar Sesión</h1>
+                <br>
+                <input type="email" id="email" placeholder="Correo electrónico" required>
+                <input type="password" id="password" placeholder="Contraseña" required>
+                <a href="#">¿Olvidaste tu contraseña?</a>
+                <button type="submit">Ingresar</button>
+                <p id="error-message" class="error-message"></p>
+            </form>
+        </div>
+
+        <div class="toggle-container">
+            <div class="toggle">
+                <div class="toggle-panel toggle-left">
+                    <h1>¡Bienvenido de nuevo!</h1>
+                    <p>Ingresa tus datos para continuar con tu investigación</p>
+                    <button class="hidden" id="login-toggle">Iniciar Sesión</button>
+                </div>
+                <div class="toggle-panel toggle-right">
+                    <h1>¡Hola!</h1>
+                    <p>Regístrate y únete a nuestra comunidad de investigación</p>
+                    <button class="hidden" id="register-toggle">Registrarse</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="login.js"></script>
+
+    <script>
+        const container = document.getElementById('container');
+        // Usamos los IDs de los botones que están en los paneles laterales
+        const registerBtn = document.getElementById('register-toggle'); 
+        const loginBtn = document.getElementById('login-toggle');
+
+        registerBtn.addEventListener('click', () => {
+            container.classList.add("active");
+        });
+
+        loginBtn.addEventListener('click', () => {
+            container.classList.remove("active");
+        });
+    </script>
+
+</body>
+
+</html>

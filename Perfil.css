@@ -1,0 +1,321 @@
+/* --- Estilos para la página de Perfil --- 
+body {
+    background-color: #f0f2f5;
+}
+
+.perfil-main {
+    padding: 80px 20px;
+    display: flex;
+    justify-content: center;
+}
+
+.perfil-card {
+    background: #fff;
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 800px;
+}
+
+.profile-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 30px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 20px;
+}
+
+/* Nuevo contenedor para la imagen y el botón 
+.profile-image-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    margin-right: 20px; /* Agrega espacio a la derecha de la foto 
+}
+
+/* Estilos para la foto de perfil principal 
+.profile-photo {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    border: 5px solid #004d80;
+    margin-bottom: 10px;
+    object-fit: cover; /* Recorta la imagen para que se ajuste al círculo 
+    object-position: center;
+}
+
+/* Estilos para el botón de cambio de foto 
+.change-pic-button {
+    background-color: #004d80;
+    color: white;
+    padding: 8px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.change-pic-button:hover {
+    background-color: #003366;
+}
+
+.profile-info {
+    flex-grow: 1; /* Permite que la información de perfil ocupe el espacio restante 
+}
+
+.profile-info h1 {
+    font-size: 2em;
+    margin: 0;
+    color: #1a1a1a;
+}
+
+.profile-info p {
+    font-size: 1.2em;
+    color: #555;
+    font-weight: 600;
+}
+
+.profile-sections h2 {
+    color: #004d80;
+    font-size: 1.5em;
+    border-bottom: 2px solid #ff9900;
+    padding-bottom: 5px;
+    margin-top: 40px;
+}
+
+.admin-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.admin-item {
+    background-color: #f7f7f7;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.admin-item h3 {
+    color: #333;
+    margin-top: 0;
+}
+
+/* Estilos para el contenedor de las fotos 
+.photo-options-container {
+    padding: 20px;
+    background-color: #f8f8f8;
+    border-radius: 8px;
+    margin-top: 20px;
+}
+
+.photo-options-container h3 {
+    margin-top: 0;
+    color: #555;
+}
+
+.photo-grid {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.avatar-option {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 3px solid transparent;
+    transition: border-color 0.3s, transform 0.2s;
+    object-fit: cover; /* Ajusta la imagen dentro del círculo 
+    object-position: center;
+}
+
+.avatar-option:hover {
+    border-color: #ff9900;
+    transform: scale(1.1);
+}
+
+.avatar-option.selected {
+    border-color: #004d80;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+}*/
+
+/* ==================================== */
+/* === ESTILOS DE PANTALLA DE PERFIL === */
+/* ==================================== */
+
+.profile-container {
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+.profile-title {
+    text-align: center;
+    color: #003366; /* Color primario similar al de tu título de Miembros */
+    margin-bottom: 30px;
+    font-size: 2.2em;
+}
+
+/* Disposición de 2 Columnas */
+.profile-layout {
+    display: flex;
+    gap: 30px; /* Espacio entre las columnas */
+    align-items: flex-start; /* Alinea las tarjetas arriba */
+}
+
+.profile-column {
+    flex: 1; /* Ambas columnas ocupan el mismo espacio */
+}
+
+/* Estilo de Tarjetas (Reutilizando tu estilo .member-card) */
+.profile-card {
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); /* Sombra suave */
+    padding: 25px;
+    margin-bottom: 20px; /* Espacio entre tarjetas */
+}
+
+.profile-card h2 {
+    color: #003366;
+    font-size: 1.4em;
+    margin-top: 0;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+}
+
+.profile-card h2 i {
+    margin-right: 10px;
+    font-size: 1.5em;
+}
+
+/* --- Área de Foto --- */
+.profile-photo-area {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.profile-photo {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #0056b3; /* Borde de color primario */
+    margin-bottom: 10px;
+}
+
+/* --- Formulario de Datos Editables --- */
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #555;
+}
+
+.form-group input[type="text"],
+.form-group textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box; /* Importante para el padding */
+    font-family: inherit;
+}
+
+/* --- Botones de Acción --- */
+.action-btn-primary {
+    background-color: #0056b3; /* Azul fuerte */
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+    margin-right: 10px;
+    transition: background-color 0.3s;
+}
+
+.action-btn-primary:hover {
+    background-color: #004494;
+}
+
+.action-btn-secondary {
+    background-color: #f0f0f0;
+    color: #333;
+    border: 1px solid #ccc;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: background-color 0.3s;
+}
+
+.action-btn-secondary:hover {
+    background-color: #e0e0e0;
+}
+
+.action-btn-primary i, .action-btn-secondary i {
+    margin-right: 5px;
+}
+
+/* --- Listas Académicas --- */
+.academic-section ul {
+    list-style: none;
+    padding-left: 0;
+    margin-top: 10px;
+}
+
+.academic-section ul li {
+    margin-bottom: 8px;
+    color: #444;
+}
+
+.academic-section h3 {
+    font-size: 1.1em;
+    color: #333;
+    margin-top: 20px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+}
+
+.academic-section h3 i {
+    margin-right: 8px;
+    color: #0056b3;
+}
+
+.academic-links p {
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+}
+
+.academic-links i {
+    margin-right: 8px;
+    color: #0056b3;
+}
+
+.profile-link {
+    color: #0056b3;
+    text-decoration: none;
+}
+
+.profile-link:hover {
+    text-decoration: underline;
+}
+
+/* Media Query para móvil */
+@media (max-width: 768px) {
+    .profile-layout {
+        flex-direction: column;
+    }
+}

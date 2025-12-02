@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="Noticias.css">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="CA.css">
+    <title>Noticias</title>
+</head>
+<body>
+
+    <nav>
+        <div class="brand">
+            <img src="img/logo-ca.jpg" alt="">
+            <a href="#" class="logo">Cuerpo Académico</a>
+        </div>
+        <div class="links">
+            <a href="#" onclick="window.location.href='index.html'">Inicio</a>
+            <a href="#que-es" onclick="window.location.href='CA.html'">Qué es CA?</a>
+            <a href="#lineas" onclick="window.location.href='Conocimiento.html'">Líneas de Conocimiento</a>
+            <a href="#noticias" onclick="window.location.href='Noticias.html'">Noticias y mas</a>
+            <a href="#Sitios" onclick="window.location.href='Sitios.html'">Proyectos</a>
+        </div>
+        <div class="nav-bar">
+            <div id="auth-link">
+                <a href="login.html" class="login-button">Iniciar Sesión</a>
+            </div>
+        </div>
+    </nav>
+
+    <div id="admin-panel" style="display:none;">
+        <hr>
+        <h2>Panel de Administración</h2>
+        <div class="admin-controls">
+            <button class="admin-button add-button">Agregar Noticia</button>
+            <button class="admin-button add-button">Agregar Congreso</button>
+            <button class="admin-button add-button">Agregar Foro</button>
+            <button class="admin-button add-button">Agregar Charla</button>
+        </div>
+        <hr>
+    </div>
+
+    <main class="noticias-main">
+        <div class="noticias-container">
+            
+            <section class="social-qr-section">
+                <h2>Síguenos en Redes Sociales</h2>
+                <br>
+                <p>Escanea los códigos QR o da click en la palabra para acceder a nuestras últimas novedades.</p>
+                <div class="qr-grid">
+                    
+                    <div class="qr-item">
+                        <img src="img/Facebook-QR.jpg" alt="Código QR de Facebook" class="qr-code">
+                        <a href="https://www.facebook.com/share/17CRf41CNG/?mibextid=wwXIfr" target="_blank" class="qr-link">Facebook</a>
+                    </div>
+                    
+                    <div class="qr-item">
+                        <img src="img/Instagram-QR.jpg" alt="Código QR de Instagram" class="qr-code">
+                        <a href="https://www.instagram.com/ca_utch?igsh=MXAyMmVmYnRpMzAxbg%3D%3D&utm_source=qr" target="_blank" class="qr-link">Instagram</a>
+                    </div>
+                </div>
+            </section>
+            
+            <div id="admin-panel" style="display:none;">
+                <hr>
+                <h2>Panel de Administración</h2>
+                <div class="admin-controls">
+                    <button class="admin-button add-button">➕ Agregar Noticia</button>
+                    <button class="admin-button add-button">➕ Agregar Congreso</button>
+                    </div>
+                <hr>
+            </div>
+
+            <section class="noticias-section">
+                <h2>Noticias Recientes desde la Web</h2>
+                
+                <div class="noticia-item">
+                    <div class="edit-buttons" style="display:none;">
+                        <button class="edit-button">✏️</button>
+                        <button class="delete-button">🗑️</button>
+                    </div>
+                    <h3>Título de la Noticia 1</h3>
+                    <p>Descripción corta de la noticia. Aquí puedes poner un resumen del evento o artículo más reciente.</p>
+                    <a href="#" class="read-more">Leer más</a>
+                </div>
+
+                <div class="noticia-item">
+                    <div class="edit-buttons" style="display:none;">
+                        <button class="edit-button">✏️</button>
+                        <button class="delete-button">🗑️</button>
+                    </div>
+                    <h3>Publicación de Investigación: 'Avances en Ciberseguridad Cuántica'</h3>
+                    <p>El Cuerpo Académico ha publicado un nuevo artículo en la revista internacional "Journal of Tech Security" detallando sus hallazgos sobre criptografía post-cuántica.</p>
+                    <a href="#" class="read-more">Ver Publicación</a>
+                </div>
+
+                <div class="noticia-item">
+                    <div class="edit-buttons" style="display:none;">
+                        <button class="edit-button">✏️</button>
+                        <button class="delete-button">🗑️</button>
+                    </div>
+                    <h3>Invitación: Participación en el Congreso Nacional de TI (CNTI 2025)</h3>
+                    <p>Nuestros miembros presentarán 3 ponencias sobre análisis forense y protección de datos en la próxima edición del congreso CNTI que se celebrará en la Ciudad de México en noviembre.</p>
+                    <a href="#" class="read-more">Ver Agenda</a>
+                </div>
+                
+            </section>
+
+            </div>
+    </main>
+
+    <script src="Script.js"></script>
+    <script src="Noticias.js"></script>
+
+    <script>
+
+        document.addEventListener('DOMContentLoaded', () => {
+    const authLinkContainer = document.getElementById('auth-link');
+    const userLoggedIn = localStorage.getItem('userLoggedIn');
+    const userEmail = localStorage.getItem('userEmail');
+    const urlParams = new URLSearchParams(window.location.search);
+
+    if (urlParams.get('login') === 'success') {
+        const cleanUrl = window.location.origin + window.location.pathname;
+        window.location.replace(cleanUrl);
+        return;
+    }
+
+    if (userLoggedIn === 'true') {
+        // Si el usuario ha iniciado sesión, crea el menú desplegable de perfil
+        const profileDropdown = document.createElement('div');
+        profileDropdown.className = 'profile-dropdown';
+        
+        const profileButton = document.createElement('button');
+        profileButton.className = 'profile-button';
+        profileButton.textContent = `Hola, ${userEmail.split('@')[0]} ▼`;
+        
+        const dropdownContent = document.createElement('div');
+        dropdownContent.className = 'dropdown-content';
+        
+        const viewProfileLink = document.createElement('a');
+        viewProfileLink.href = 'perfil.html';
+        viewProfileLink.textContent = 'Ver Perfil';
+        
+        const logoutButton = document.createElement('button');
+        logoutButton.textContent = 'Cerrar Sesión';
+        logoutButton.className = 'logout-button-menu';
+        logoutButton.addEventListener('click', () => {
+            localStorage.clear();
+            window.location.reload();
+        });
+        
+        dropdownContent.appendChild(viewProfileLink);
+        dropdownContent.appendChild(logoutButton);
+        
+        profileDropdown.appendChild(profileButton);
+        profileDropdown.appendChild(dropdownContent);
+        
+        authLinkContainer.innerHTML = '';
+        authLinkContainer.appendChild(profileDropdown);
+
+        profileButton.addEventListener('click', () => {
+            dropdownContent.classList.toggle('show-dropdown');
+        });
+
+        window.onclick = function(event) {
+            if (!event.target.matches('.profile-button')) {
+                const dropdowns = document.getElementsByClassName('dropdown-content');
+                for (let i = 0; i < dropdowns.length; i++) {
+                    const openDropdown = dropdowns[i];
+                    if (openDropdown.classList.contains('show-dropdown')) {
+                        openDropdown.classList.remove('show-dropdown');
+                    }
+                }
+            }
+        };
+
+    } else {
+        // Si no hay sesión, muestra el botón de "Iniciar Sesión"
+        authLinkContainer.innerHTML = '<a href="login.html" class="login-button">Iniciar Sesión</a>';
+    }
+});
+
+    </script>
+    
+</body>
+</html>

@@ -1,0 +1,129 @@
+/* --- Estilos para la Sección de Otros Sitios (Prioridad: Blanco y Azul) --- */
+#otros-sitios {
+    padding: 80px 0;
+    background-color: #ffffff;
+    text-align: center;
+}
+
+#otros-sitios h2 {
+    font-weight: 700;
+    color: #212529;
+    font-size: 2.5em;
+    margin-bottom: 60px;
+    position: relative;
+    display: inline-block;
+    padding-bottom: 10px;
+}
+
+#otros-sitios h2::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 0;
+    width: 60px;
+    height: 4px;
+    background-color: #007bff;
+    border-radius: 2px;
+}
+
+.sitios-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 40px;
+    margin: 0 auto;
+    max-width: 1100px;
+    padding: 0 20px;
+}
+
+.sitio-card {
+    background-color: #f0f8ff;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 123, 255, 0.1);
+    border: 1px solid #cce5ff;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 280px; /* Mantener la altura mínima para consistencia */
+}
+
+.sitio-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 25px rgba(0, 123, 255, 0.25);
+}
+
+.sitio-card h3 {
+    color: #007bff;
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-size: 1.5em;
+    font-weight: 600;
+}
+
+.sitio-card p {
+    color: #495057;
+    margin-bottom: 20px; /* Reducido un poco para dar espacio al logo */
+    font-size: 0.95em;
+    line-height: 1.6;
+    flex-grow: 1;
+}
+
+/* --- NUEVO ESTILO PARA EL LOGO DENTRO DE LA TARJETA --- */
+.card-logo {
+    max-width: 80px; /* Tamaño máximo del logo */
+    height: auto;
+    margin: 15px auto 25px auto; /* Centrar y darle margen superior e inferior */
+    opacity: 0.85; /* Un poco transparente para integrarse mejor */
+    transition: opacity 0.3s ease;
+}
+
+.sitio-card:hover .card-logo {
+    opacity: 1; /* Opacidad completa al pasar el mouse por la tarjeta */
+}
+
+
+.sitio-link {
+    display: inline-block;
+    background-color: #007bff;
+    color: white;
+    padding: 12px 25px;
+    border-radius: 25px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.95em;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    border: 2px solid #007bff;
+}
+
+.sitio-link:hover {
+    background-color: #0056b3;
+    border-color: #0056b3;
+    transform: translateY(-2px);
+}
+
+/* Media Query para pantallas más pequeñas */
+@media (max-width: 768px) {
+    #otros-sitios {
+        padding: 60px 0;
+    }
+    #otros-sitios h2 {
+        font-size: 2em;
+        margin-bottom: 40px;
+    }
+    .sitios-grid {
+        grid-template-columns: 1fr;
+        padding: 0 15px;
+    }
+    .sitio-card {
+        padding: 25px;
+        min-height: auto;
+    }
+    .card-logo {
+        max-width: 70px; /* Ajuste del tamaño del logo en móvil si es necesario */
+        margin-top: 10px;
+        margin-bottom: 20px;
+    }
+}
