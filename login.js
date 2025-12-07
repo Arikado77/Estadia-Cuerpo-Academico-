@@ -93,3 +93,55 @@ document.addEventListener('DOMContentLoaded', () => {
         errorMessage.style.display = 'block';
     });
 });
+
+
+
+// login.js
+
+const db = require('./db.config'); // Asegúrate de que la ruta a db.config.js sea correcta
+const bcrypt = require('bcrypt');
+const saltRounds = 10; 
+
+// A. Pega aquí la función que maneja el HASHING y el INSERT
+async function registrarUsuario(datosRegistro) {
+    try {
+        const contrasena_hash = await bcrypt.hash(datosRegistro.contrasena, saltRounds);
+
+        const queryText = `
+            INSERT INTO usuarios (
+                email, contrasena_hash, nombre, universidad, ciudad_estado, 
+                linea_investigacion, perfil_google_url, orcid_id
+            )
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+            RETURNING id;
+        `;
+        
+        const values = [
+            datosRegistro.email,
+            contrasena_hash,
+            datosRegistro.nombre,
+            datosRegistro.universidad,
+            datosRegistro.ciudad_estado,
+            datosRegistro.linea_investigacion,
+            datosRegistro.perfil_google_url,
+            datosRegistro.orcid_id
+        ];
+
+        const res = await db.query(queryText, values);
+        
+        return { success: true, userId: res.rows[0].id };
+
+    } catch (error) {
+        // Código de error 23505 es para duplicado (email UNIQUE)
+        if (error.code === '23505') { 
+            return { success: false, error: 'El email ya está registrado.' }; 
+        }
+        console.error('Error de registro:', error.stack);
+        return { success: false, error: 'Fallo interno del servidor.' };
+    }
+}
+
+// B. Exporta la función para que server.js pueda usarla
+module.exports = {
+    registrarUsuario
+};
