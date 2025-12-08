@@ -6,7 +6,7 @@ const PORT = 3000;
 
 // Importar la lógica de registro de usuarios
 // Asumiendo que el archivo login.js está en el mismo directorio.
-const { registrarUsuario } = require('./login'); 
+const { registrarUsuario } = require('./auth.controller');
 
 // ===============================================
 // MIDDLEWARE (Manejo de Datos y Archivos Estáticos)

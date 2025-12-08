@@ -1,147 +1,56 @@
+// login-cliente.js
+// ESTE CÓDIGO SE EJECUTA EN EL NAVEGADOR
+
 document.addEventListener('DOMContentLoaded', () => {
-    // Referencias a los elementos del DOM
-    const container = document.getElementById('container');
-    const loginBtn = document.getElementById('login-toggle');
-    const registerBtn = document.getElementById('register-toggle');
+    // 1. Obtener el formulario (Asume que tu formulario tiene el id="registroForm")
+    const registroForm = document.getElementById('registroForm');
 
-    // Funcionalidad para cambiar de panel
-    if (loginBtn && registerBtn) {
-        registerBtn.addEventListener('click', () => {
-            container.classList.add("active");
-        });
+    // 2. Escuchar el evento de envío del formulario
+    if (registroForm) {
+        registroForm.addEventListener('submit', async (e) => {
+            e.preventDefault(); // Detiene el envío normal del formulario
 
-        loginBtn.addEventListener('click', () => {
-            container.classList.remove("active");
-        });
-    }
-
-    // Cuentas predefinidas (simulando una base de datos)
-    const predefinedAccounts = {
-        'carlos@cuerpo.com': { password: 'carlitos', role: 'admin' },
-        'user@cuerpo.com': { password: 'userpassword', role: 'user' }
-    };
-    
-    // Carga cuentas de usuarios registrados si existen
-    let registeredUsers = JSON.parse(localStorage.getItem('registeredUsers')) || {};
-
-    // ---- Lógica para el REGISTRO ----
-    const registerForm = document.querySelector('.form-container.sign-up form');
-    if (registerForm) {
-        registerForm.addEventListener('submit', function(event) {
-            event.preventDefault();
-
-            const regEmailInput = document.querySelector('.form-container.sign-up input[type="email"]');
-            const regPasswordInput = document.querySelector('.form-container.sign-up input[type="password"]');
-            const registerError = document.getElementById('register-error');
-            const regEmail = regEmailInput.value;
-            const regPassword = regPasswordInput.value;
-
-            registerError.textContent = '';
-            registerError.style.display = 'none';
+            // 3. Obtener todos los datos del formulario
+            const datosRegistro = {
+                nombre: document.getElementById('nombre').value,
+                email: document.getElementById('email').value,
+                universidad: document.getElementById('universidad').value,
+                ciudad_estado: document.getElementById('ciudad_estado').value,
+                linea_investigacion: document.getElementById('linea_investigacion').value,
+                perfil_google_url: document.getElementById('perfil_google_url').value,
+                orcid_id: document.getElementById('orcid_id').value,
+                contrasena: document.getElementById('contrasena').value // Nota: No envíes 'Confirmar Contraseña'
+            };
             
-            // Valida si el correo ya existe
-            if (predefinedAccounts[regEmail] || registeredUsers[regEmail]) {
-                registerError.textContent = 'Este correo ya está registrado.';
-                registerError.style.display = 'block';
+            // Lógica de validación básica: verifica que las contraseñas coincidan aquí antes de enviar.
+            if (datosRegistro.contrasena !== document.getElementById('confirmar_contrasena').value) {
+                alert('Las contraseñas no coinciden.');
                 return;
             }
 
-            // Guarda el nuevo usuario en localStorage con rol 'user'
-            const newUser = {
-                password: regPassword,
-                role: 'user'
-            };
-            registeredUsers[regEmail] = newUser;
-            localStorage.setItem('registeredUsers', JSON.stringify(registeredUsers));
+            // 4. Enviar los datos al servidor (ruta POST en server.js)
+            try {
+                const respuesta = await fetch('/api/registro', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(datosRegistro),
+                });
 
-            alert('¡Registro exitoso! Ahora puedes iniciar sesión.');
-            container.classList.remove("active"); // Cambia al panel de login
+                const data = await respuesta.json();
+
+                if (respuesta.ok) {
+                    alert('✅ ¡Registro exitoso! Ya puedes iniciar sesión.');
+                    window.location.href = '/login'; // Redirige a la página de login
+                } else {
+                    alert(`❌ Error al registrar: ${data.error || 'Fallo desconocido.'}`);
+                }
+
+            } catch (error) {
+                console.error('Error de red:', error);
+                alert('Fallo de conexión con el servidor.');
+            }
         });
     }
-
-
-    // ---- Lógica para el INICIO DE SESIÓN ----
-    document.getElementById('login-form').addEventListener('submit', function(event) {
-        event.preventDefault();
-
-        const emailInput = document.getElementById('email').value;
-        const passwordInput = document.getElementById('password').value;
-        const errorMessage = document.getElementById('error-message');
-
-        errorMessage.style.display = 'none';
-
-        // Intenta autenticar con cuentas predefinidas
-        if (predefinedAccounts[emailInput] && predefinedAccounts[emailInput].password === passwordInput) {
-            localStorage.setItem('userLoggedIn', 'true');
-            localStorage.setItem('userRole', predefinedAccounts[emailInput].role);
-            localStorage.setItem('userEmail', emailInput);
-            window.location.href = 'index.html';
-            return;
-        }
-
-        // Intenta autenticar con usuarios registrados
-        if (registeredUsers[emailInput] && registeredUsers[emailInput].password === passwordInput) {
-            localStorage.setItem('userLoggedIn', 'true');
-            localStorage.setItem('userRole', registeredUsers[emailInput].role);
-            localStorage.setItem('userEmail', emailInput);
-            window.location.href = 'index.html';
-            return;
-        }
-        
-        // Si no se encuentra en ninguna de las dos listas
-        errorMessage.textContent = 'Correo electrónico o contraseña incorrectos.';
-        errorMessage.style.display = 'block';
-    });
 });
-
-
-
-// login.js
-
-const db = require('./db.config'); // Asegúrate de que la ruta a db.config.js sea correcta
-const bcrypt = require('bcrypt');
-const saltRounds = 10; 
-
-// A. Pega aquí la función que maneja el HASHING y el INSERT
-async function registrarUsuario(datosRegistro) {
-    try {
-        const contrasena_hash = await bcrypt.hash(datosRegistro.contrasena, saltRounds);
-
-        const queryText = `
-            INSERT INTO usuarios (
-                email, contrasena_hash, nombre, universidad, ciudad_estado, 
-                linea_investigacion, perfil_google_url, orcid_id
-            )
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-            RETURNING id;
-        `;
-        
-        const values = [
-            datosRegistro.email,
-            contrasena_hash,
-            datosRegistro.nombre,
-            datosRegistro.universidad,
-            datosRegistro.ciudad_estado,
-            datosRegistro.linea_investigacion,
-            datosRegistro.perfil_google_url,
-            datosRegistro.orcid_id
-        ];
-
-        const res = await db.query(queryText, values);
-        
-        return { success: true, userId: res.rows[0].id };
-
-    } catch (error) {
-        // Código de error 23505 es para duplicado (email UNIQUE)
-        if (error.code === '23505') { 
-            return { success: false, error: 'El email ya está registrado.' }; 
-        }
-        console.error('Error de registro:', error.stack);
-        return { success: false, error: 'Fallo interno del servidor.' };
-    }
-}
-
-// B. Exporta la función para que server.js pueda usarla
-module.exports = {
-    registrarUsuario
-};
