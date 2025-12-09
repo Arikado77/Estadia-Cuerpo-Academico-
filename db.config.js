@@ -10,7 +10,9 @@ const pool = new Pool({
     database: process.env.PG_DATABASE,
     password: process.env.PG_PASSWORD, 
     port: process.env.PG_PORT, 
-    // Añadir ssl si estás en producción, pero por ahora lo dejamos fuera para lo local
+    ssl: {
+        rejectUnauthorized: false // Esto permite aceptar el certificado de DigitalOcean
+    }
 });
 
 // Mensaje de prueba de conexión (opcional, para depuración)
