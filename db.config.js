@@ -1,61 +1,27 @@
-//(Anterior codigo)
+const { Pool } = require('pg'); // Necesario para definir "Pool"
 
-// db.config.js
+// Si tu app usa db.query, esto es lo que necesita ser exportado
 
-//const { Pool } = require('pg');
-
-// Crea un nuevo Pool de conexión. 
-// Asegúrate de cambiar estos datos por tus credenciales de PostgreSQL.
-//const pool = new Pool({
-// user: 'tu_usuario_postgres',       // Ej: postgres
-//  host: 'localhost',                  // O la IP de tu servidor de BD
-//  database: 'tu_nombre_de_base_datos', // Ej: ca_web_db
-//  password: 'tu_contraseña_segura',
-//  port: 5432,                         // Puerto estándar de PostgreSQL
-//});
-
-// Mensaje de prueba de conexión (opcional, para depuración)
-//pool.on('connect', () => {
-//  console.log('Conectado exitosamente a PostgreSQL.');
-//});
-
-// Exporta el Pool para usarlo en el resto de la aplicación
-//module.exports = {
-//  query: (text, params) => pool.query(text, params),
-//}
-
-
-
-// db.config.js
-// Configuración de la conexión a PostgreSQL (DigitalOcean)
-
-// 1. Cargar variables de entorno desde el archivo .env
-require('dotenv').config(); 
-
-// Importar la librería de PostgreSQL
-const { Pool } = require('pg');
-
-// 2. Crear el objeto de configuración usando las variables separadas del .env
-// ESTO ES CLAVE para solucionar el error de "password must be a string".
-
-const pool = process.env.DATABASE_URL
-  ? new Pool({
-      connectionString: process.env.DATABASE_URL,
-      ssl: { rejectUnauthorized: false } // DigitalOcean requiere SSL
-    })
-  : new Pool({
-      user: process.env.DB_USER,
-      password: process.env.DB_PASS,
-      host: process.env.DB_HOST,
-      port: process.env.DB_PORT || 5432,
-      database: process.env.DB_NAME,
-      ssl: false
-    });
-
-pool.connect((err, client, release) => {
-  if (err) return console.error('❌ Error al conectar con PostgreSQL:', err.message);
-  console.log('✅ Conexión exitosa a PostgreSQL!');
-  release();
+// Configuración del pool de conexiones usando variables de entorno
+// Las variables se leerán del archivo .env
+const pool = new Pool({
+    user: process.env.PG_USER,
+    host: process.env.PG_HOST,
+    database: process.env.PG_DATABASE,
+    password: process.env.PG_PASSWORD, 
+    port: process.env.PG_PORT, 
+    // Añadir ssl si estás en producción, pero por ahora lo dejamos fuera para lo local
 });
 
-module.exports = { query: (text, params) => pool.query(text, params), pool };
+// Mensaje de prueba de conexión (opcional, para depuración)
+pool.on('connect', () => {
+    console.log('Conectado exitosamente a PostgreSQL.');
+});
+
+// Exporta la función query para que otros archivos puedan hacer: db.query(...)
+module.exports = {
+    // Si otros archivos usan 'db.query', esta es la forma correcta:
+    query: (text, params) => pool.query(text, params),
+};
+
+// NOTA: Si tu código usa db.pool, agrega: pool: pool, al objeto exportado.
