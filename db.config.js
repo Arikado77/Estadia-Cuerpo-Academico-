@@ -37,33 +37,25 @@ const { Pool } = require('pg');
 
 // 2. Crear el objeto de configuración usando las variables separadas del .env
 // ESTO ES CLAVE para solucionar el error de "password must be a string".
-const config = {
-    user: process.env.DB_USER,
-    password: process.env.DB_PASS,
-    host: process.env.DB_HOST,
-    port: process.env.DB_PORT,
-    database: process.env.DB_NAME,
-    // Configuración SSL obligatoria para DigitalOcean
-    ssl: {
-        rejectUnauthorized: false
-    }
-};
 
-// 3. Crear el pool de conexiones
-const pool = new Pool(config);
+const pool = process.env.DATABASE_URL
+  ? new Pool({
+      connectionString: process.env.DATABASE_URL,
+      ssl: { rejectUnauthorized: false } // DigitalOcean requiere SSL
+    })
+  : new Pool({
+      user: process.env.DB_USER,
+      password: process.env.DB_PASS,
+      host: process.env.DB_HOST,
+      port: process.env.DB_PORT || 5432,
+      database: process.env.DB_NAME,
+      ssl: false
+    });
 
-// Opcional: Probar la conexión al iniciar el servidor
 pool.connect((err, client, release) => {
-    if (err) {
-        // Mostrar el error de conexión si falla
-        return console.error('❌ Error al conectar con PostgreSQL:', err.message);
-    }
-    console.log('✅ Conexión exitosa a PostgreSQL!');
-    release(); // Liberar el cliente, pero el pool sigue activo
+  if (err) return console.error('❌ Error al conectar con PostgreSQL:', err.message);
+  console.log('✅ Conexión exitosa a PostgreSQL!');
+  release();
 });
 
-// 4. Exportar la función 'query'
-module.exports = {
-    query: (text, params) => pool.query(text, params),
-    pool // Exportar el pool por si se necesita control avanzado
-};
+module.exports = { query: (text, params) => pool.query(text, params), pool };

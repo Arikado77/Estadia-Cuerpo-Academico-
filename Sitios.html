@@ -4,9 +4,29 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="Sitios.css">
+    <link rel="stylesheet" href="style.css">
     <title>Otros Sitos</title>
 </head>
 <body>
+
+    <nav>
+        <div class="brand">
+            <img src="img/logo-ca.jpg" alt="">
+            <a href="#" class="logo">Cuerpo Académico</a>
+        </div>
+        <div class="links">
+            <a href="#" onclick="window.location.href='index.html'">Inicio</a>
+            <a href="#que-es" onclick="window.location.href='CA.html'">Qué es CA?</a>
+            <a href="#lineas" onclick="window.location.href='Conocimiento.html'">Líneas de Conocimiento</a>
+            <a href="#noticias" onclick="window.location.href='Noticias.html'">Noticias y mas</a>
+            <a href="#Sitios" onclick="window.location.href='Sitios.html'">Proyectos</a>
+        </div>
+        <div class="nav-bar">
+            <div id="auth-link">
+                <a href="login.html" class="login-button">Iniciar Sesión</a>
+            </div>
+        </div>
+    </nav>
 
     <section id="otros-sitios" class="section">
         <div class="container">
@@ -37,6 +57,77 @@
             </div>
         </div>
     </section>
+
+    <script>
+
+        document.addEventListener('DOMContentLoaded', () => {
+    const authLinkContainer = document.getElementById('auth-link');
+    const userLoggedIn = localStorage.getItem('userLoggedIn');
+    const userEmail = localStorage.getItem('userEmail');
+    const urlParams = new URLSearchParams(window.location.search);
+
+    if (urlParams.get('login') === 'success') {
+        const cleanUrl = window.location.origin + window.location.pathname;
+        window.location.replace(cleanUrl);
+        return;
+    }
+
+    if (userLoggedIn === 'true') {
+        // Si el usuario ha iniciado sesión, crea el menú desplegable de perfil
+        const profileDropdown = document.createElement('div');
+        profileDropdown.className = 'profile-dropdown';
+        
+        const profileButton = document.createElement('button');
+        profileButton.className = 'profile-button';
+        profileButton.textContent = `Hola, ${userEmail.split('@')[0]} ▼`;
+        
+        const dropdownContent = document.createElement('div');
+        dropdownContent.className = 'dropdown-content';
+        
+        const viewProfileLink = document.createElement('a');
+        viewProfileLink.href = 'perfil.html';
+        viewProfileLink.textContent = 'Ver Perfil';
+        
+        const logoutButton = document.createElement('button');
+        logoutButton.textContent = 'Cerrar Sesión';
+        logoutButton.className = 'logout-button-menu';
+        logoutButton.addEventListener('click', () => {
+            localStorage.clear();
+            window.location.reload();
+        });
+        
+        dropdownContent.appendChild(viewProfileLink);
+        dropdownContent.appendChild(logoutButton);
+        
+        profileDropdown.appendChild(profileButton);
+        profileDropdown.appendChild(dropdownContent);
+        
+        authLinkContainer.innerHTML = '';
+        authLinkContainer.appendChild(profileDropdown);
+
+        profileButton.addEventListener('click', () => {
+            dropdownContent.classList.toggle('show-dropdown');
+        });
+
+        window.onclick = function(event) {
+            if (!event.target.matches('.profile-button')) {
+                const dropdowns = document.getElementsByClassName('dropdown-content');
+                for (let i = 0; i < dropdowns.length; i++) {
+                    const openDropdown = dropdowns[i];
+                    if (openDropdown.classList.contains('show-dropdown')) {
+                        openDropdown.classList.remove('show-dropdown');
+                    }
+                }
+            }
+        };
+
+    } else {
+        // Si no hay sesión, muestra el botón de "Iniciar Sesión"
+        authLinkContainer.innerHTML = '<a href="login.html" class="login-button">Iniciar Sesión</a>';
+    }
+});
+
+    </script>
     
 </body>
 </html>

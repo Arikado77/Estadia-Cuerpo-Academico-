@@ -67,7 +67,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Borra los datos de la sesión almacenados
                 localStorage.clear();
                 // Redirige al usuario a la página principal o de login
-                window.location.href = 'login.html'; // Ajusta a tu página de login/inicio
+                window.location.href = 'index.html'; // Ajusta a tu página de login/inicio
             });
         }
 
