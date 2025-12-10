@@ -2,6 +2,7 @@
 // ESTE CÓDIGO SE EJECUTA EN EL NAVEGADOR
 
 document.addEventListener('DOMContentLoaded', () => {
+    
     // === 1. LÓGICA DE REGISTRO ===
     const registroForm = document.getElementById('registroForm');
     
@@ -11,19 +12,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // 1. Obtener todos los datos del formulario de registro
             const datosRegistro = {
-                nombre: document.getElementById('nombre').value,
-                email: document.getElementById('email').value,
+                // Asumiendo que has corregido el HTML para que todos estos IDs existan
+                nombre: document.getElementById('nombre').value, 
+                email: document.getElementById('reg-email').value, // <-- Usamos el ID original
                 universidad: document.getElementById('universidad').value,
                 ciudad_estado: document.getElementById('ciudad_estado').value,
                 linea_investigacion: document.getElementById('linea_investigacion').value,
                 perfil_google_url: document.getElementById('perfil_google_url').value,
                 orcid_id: document.getElementById('orcid_id').value,
-                contrasena_hash: document.getElementById('contrasena').value
+                
+                // ¡CORRECCIÓN CRÍTICA DE SINCRONIZACIÓN! 
+                // Enviamos la llave que el servidor Node.js espera para el hashing
+                contrasena_hash: document.getElementById('reg-password').value // <-- Usamos el ID original
             };
             
             // 2. Validación: verificar que las contraseñas coincidan
-            const confirmarContrasena = document.getElementById('confirmar_contrasena').value;
-            if (datosRegistro.contrasena !== confirmarContrasena) {
+            // Usamos el ID original: id="confirm-password"
+            const confirmarContrasena = document.getElementById('confirm-password').value; 
+            
+            // Validamos contra el campo que acabamos de leer
+            if (datosRegistro.contrasena_hash !== confirmarContrasena) { 
                 alert('Las contraseñas no coinciden.');
                 return;
             }
@@ -40,10 +48,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 const data = await respuesta.json();
 
-                if (respuesta.ok) {
+                if (respuesta.ok) { // Respuesta 200-299 (201 Created)
                     alert('✅ ¡Registro exitoso! Ahora puedes iniciar sesión.');
                     window.location.href = '/login.html'; // Redirige a la página de login
-                } else {
+                } else { // Respuestas 4xx, 5xx
                     alert(`❌ Error al registrar: ${data.error || 'Fallo desconocido.'}`);
                 }
 
@@ -64,8 +72,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // 1. Obtener solo email y contraseña para el login
             const datosLogin = {
+                // ASUMO que el login usa los IDs originales del formulario de Login
                 email: document.getElementById('email').value,
-                contrasena: document.getElementById('contrasena').value
+                contrasena: document.getElementById('contrasena').value // <-- ID del campo de contraseña del LOGIN
             };
             
             // 2. Validación básica
@@ -76,7 +85,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // 3. Enviar los datos al servidor (Ruta: /api/login)
             try {
-                const respuesta = await fetch('/api/login', { // *** RUTA DE LOGIN ***
+                const respuesta = await fetch('/api/login', { 
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -88,8 +97,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 if (respuesta.ok) {
                     alert('✅ ¡Inicio de sesión exitoso!');
-                    // *** CAMBIAR ESTA RUTA POR LA PÁGINA QUE VE EL USUARIO TRAS INICIAR SESIÓN ***
-                    window.location.href = '/dashboard.html'; 
+                    // Redirige al index o al dashboard (debe coincidir con la ruta en server.js)
+                    window.location.href = '/'; 
                 } else {
                     alert(`❌ Error al iniciar sesión: ${data.error || 'Credenciales inválidas o fallo desconocido.'}`);
                 }

@@ -13,25 +13,21 @@
 
     <div class="container" id="container">
         <div class="form-container sign-up">
-            <form id="registroForm"> 
+            <form id="registerForm">
                 <h1>Crear Cuenta</h1>
-                <br>
-                
-                <input type="text" id="nombre" placeholder="Nombre Completo" required>
-                <input type="email" id="email" placeholder="Correo electrónico" required>
-                <input type="text" id="universidad" placeholder="Universidad" required>
-                <input type="text" id="ciudad_estado" placeholder="Ciudad/Estado" required>
-                <input type="text" id="linea_investigacion" placeholder="Línea de Investigación" required>
-                <input type="url" id="perfil_google_url" placeholder="Perfil de Google (URL)">
-                <input type="text" id="orcid_id" placeholder="ORCID (ej: 0000-0000-0000-0000)">
-                
-                <input type="password" id="contrasena_hash" placeholder="Contraseña" required>
-                <input type="password" id="confirmar_contrasena_hash" placeholder="Confirmar Contraseña" required>
-                
-                <button type="submit">Registrarse</button>
-                <p id="register-error" class="error-message"></p>
+                    <br>
+                    <input type="text" placeholder="Nombre Completo" required>
+                    <input type="email" id="reg-email" placeholder="Correo electrónico" required>
+                    <input type="text" placeholder="Universidad" required>
+                    <input type="text" placeholder="Ciudad/Estado" required>
+                    <input type="text" placeholder="Línea de Investigación" required>
+                    <input type="url" placeholder="Perfil de Google (URL)">
+                    <input type="text" placeholder="ORCID (ej: 0000-0000-0000-0000)">
+                    <input type="password" id="reg-password" placeholder="Contraseña" required>
+                    <input type="password" id="confirm-password" placeholder="Confirmar Contraseña" required>
+                    <button type="submit">Registrarse</button>
+                    <p id="register-error" class="error-message"></p>
             </form>
-        </div>
     </div>
 
         <div class="form-container sign-in">
