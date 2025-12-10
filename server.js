@@ -1,12 +1,13 @@
+// server.js
 // Importar módulos esenciales
 const express = require('express');
 const path = require('path');
 const app = express();
 const PORT = 3000;
 
-// Importar la lógica de registro de usuarios
-// Asumiendo que el archivo login.js está en el mismo directorio.
-const { registrarUsuario } = require('./auth.controller');
+// Importar la lógica de registro/login de usuarios
+// Ambos deben estar en auth.controller.js
+const { registrarUsuario, loginUsuario } = require('./auth.controller'); 
 
 // ===============================================
 // MIDDLEWARE (Manejo de Datos y Archivos Estáticos)
@@ -19,6 +20,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Middleware para servir archivos estáticos (CSS, JS cliente, imágenes, HTML)
+// Esto permite que el navegador cargue login.js, login.css, index.html, etc.
 app.use(express.static(__dirname)); 
 
 // ===============================================
@@ -51,27 +53,46 @@ app.get('/conocimiento', (req, res) => {
 });
 
 
-// --- Ruta para manejar el registro de usuarios (POST) ---
+// --- Ruta para manejar el REGISTRO de usuarios (POST /api/registro) ---
 
 app.post('/api/registro', async (req, res) => {
-    // req.body contiene todos los datos enviados desde el formulario HTML
+    // req.body contiene todos los datos enviados desde el formulario
     const datosRegistro = req.body; 
 
     // Llama a la función que guarda los datos en PostgreSQL
     const resultado = await registrarUsuario(datosRegistro);
 
     if (resultado.success) {
-        // Redirigir al usuario al login o a una página de éxito
-        // Opcional: puedes enviar un JSON o redirigir
         return res.status(201).json({ 
             mensaje: 'Usuario registrado exitosamente. Ahora puedes iniciar sesión.'
         });
-        // Si quieres redirigir a login.html: res.redirect('/login');
     } else {
         // Error de registro (ej. email ya existe)
         return res.status(400).json({ 
             error: resultado.error || 'Fallo en el registro. Inténtalo de nuevo.' 
         });
+    }
+});
+
+
+// --- Ruta para manejar el LOGIN (POST /api/login) ---
+
+app.post('/api/login', async (req, res) => {
+    // req.body solo contiene el email y la contraseña
+    const { email, contrasena } = req.body;
+
+    // Llama a la función que verifica las credenciales en PostgreSQL
+    const resultado = await loginUsuario(email, contrasena);
+
+    if (resultado.success) {
+        // Enviar token o cookie de sesión (aquí iría tu lógica de sesión)
+        return res.status(200).json({ 
+            mensaje: 'Inicio de sesión exitoso.', 
+            userId: resultado.userId 
+        });
+    } else {
+        // Credenciales inválidas
+        return res.status(401).json({ error: resultado.error || 'Credenciales inválidas.' });
     }
 });
 

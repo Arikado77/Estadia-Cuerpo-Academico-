@@ -5,6 +5,9 @@ const db = require('./db.config'); // Importa la conexión al Pool de PostgreSQL
 const bcrypt = require('bcrypt');
 const saltRounds = 10; // Nivel de seguridad de hashing
 
+// ===============================================
+// 1. FUNCIÓN DE REGISTRO (Ya existente, revisada)
+// ===============================================
 async function registrarUsuario(datosRegistro) {
     try {
         // 1. Hashing de la contraseña (Seguridad)
@@ -20,7 +23,6 @@ async function registrarUsuario(datosRegistro) {
             RETURNING id;
         `;
         
-        // El orden de los valores DEBE coincidir con el orden de los campos en la consulta SQL
         const values = [
             datosRegistro.email,
             contrasena_hash,
@@ -37,7 +39,6 @@ async function registrarUsuario(datosRegistro) {
         return { success: true, userId: res.rows[0].id };
 
     } catch (error) {
-        // Manejar error 23505: Email ya existe (porque lo definimos como UNIQUE)
         if (error.code === '23505') { 
             return { success: false, error: 'El correo electrónico ya se encuentra registrado.' }; 
         }
@@ -46,7 +47,42 @@ async function registrarUsuario(datosRegistro) {
     }
 }
 
-// Exportar la función para que server.js la pueda usar
+// ===============================================
+// 2. FUNCIÓN DE LOGIN (Nueva: Verifica las credenciales)
+// ===============================================
+async function loginUsuario(email, contrasena) {
+    try {
+        // 1. Buscar al usuario por email
+        const queryText = 'SELECT contrasena_hash, id FROM usuarios WHERE email = $1';
+        const res = await db.query(queryText, [email]);
+
+        if (res.rows.length === 0) {
+            // Usuario no encontrado
+            return { success: false, error: 'Usuario no encontrado.' };
+        }
+
+        const usuario = res.rows[0];
+        
+        // 2. Comparar la contraseña ingresada con el hash guardado
+        const match = await bcrypt.compare(contrasena, usuario.contrasena_hash);
+
+        if (match) {
+            // Contraseña correcta
+            return { success: true, userId: usuario.id };
+        } else {
+            // Contraseña incorrecta
+            return { success: false, error: 'Contraseña incorrecta.' };
+        }
+
+    } catch (error) {
+        console.error('Error de login en DB:', error.stack);
+        return { success: false, error: 'Fallo interno del servidor.' };
+    }
+}
+
+
+// Exportar ambas funciones para que server.js las pueda usar
 module.exports = {
-    registrarUsuario
+    registrarUsuario,
+    loginUsuario // ¡NUEVA FUNCIÓN EXPORTADA!
 };
