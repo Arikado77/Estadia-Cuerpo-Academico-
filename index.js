@@ -7,8 +7,8 @@ const PORT = process.env.PORT || 3000;
 // servir archivos estáticos
 app.use(express.static(path.join(__dirname, 'public')));
 
-// para cualquier ruta devolver index.html (single page apps)
-app.get('/*', (req, res) => {
+// Opción 2: Usar app.use() para capturar todas las rutas (el fallback)
+app.use((req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
