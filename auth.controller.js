@@ -16,8 +16,8 @@ async function registrarUsuario(datosRegistro) {
         // 2. Comando SQL de inserción
         const queryText = `
             INSERT INTO usuarios (
-                email, contrasena_hash, nombre, universidad, ciudad_estado, 
-                linea_investigacion, perfil_google_url, orcid_id
+                email, nombre, universidad, ciudad_estado, 
+                linea_investigacion, perfil_google_url, orcid_id, contrasena_hash
             )
             VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
             RETURNING id;
