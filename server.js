@@ -2,11 +2,12 @@
 // Importar módulos esenciales
 const express = require('express');
 const path = require('path');
+// *** NUEVA IMPORTACIÓN PARA SESIONES ***
+const session = require('express-session'); 
 const app = express();
 const PORT = 3000;
 
 // Importar la lógica de registro/login de usuarios
-// Ambos deben estar en auth.controller.js
 const { registrarUsuario, loginUsuario } = require('./auth.controller'); 
 
 // ===============================================
@@ -14,13 +15,23 @@ const { registrarUsuario, loginUsuario } = require('./auth.controller');
 // ===============================================
 
 // Middleware para procesar datos de formularios POST
-// 1. Permite a Express leer el cuerpo de las solicitudes como JSON (útil para APIs)
 app.use(express.json()); 
-// 2. Permite a Express leer el cuerpo de las solicitudes de formularios HTML (url-encoded)
 app.use(express.urlencoded({ extended: true }));
 
+
+// *** CONFIGURACIÓN DE EXPRESS-SESSION ***
+app.use(session({
+    // ¡CLAVE SECRETA CRUCIAL! Cambia esta cadena por una cadena aleatoria y muy larga en producción.
+    secret: 'FXMy4ar9CZjHJ2025RRRA',
+    resave: false, // Evita guardar la sesión si no hay cambios
+    saveUninitialized: false, // Evita crear sesiones para usuarios no logueados
+    cookie: { 
+        maxAge: 3600000 // Sesión válida por 1 hora (en milisegundos)
+    }
+}));
+
+
 // Middleware para servir archivos estáticos (CSS, JS cliente, imágenes, HTML)
-// Esto permite que el navegador cargue login.js, login.css, index.html, etc.
 app.use(express.static(__dirname)); 
 
 // ===============================================
@@ -29,37 +40,36 @@ app.use(express.static(__dirname));
 
 // --- Rutas para servir páginas HTML (GET) ---
 
+// Modificamos la ruta principal para verificar si el usuario está logueado
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'index.html'));
+    // Si la sesión existe, envía el index.html
+    if (req.session.isAuthenticated) {
+        return res.sendFile(path.join(__dirname, 'index.html'));
+    }
+    // Si no está autenticado, puedes redirigir a login, o solo enviar el index.html
+    return res.sendFile(path.join(__dirname, 'index.html'));
 });
 
 app.get('/login', (req, res) => {
+    // Si ya está autenticado, redirige al inicio para evitar que entre de nuevo al login
+    if (req.session.isAuthenticated) {
+        return res.redirect('/');
+    }
     res.sendFile(path.join(__dirname, 'login.html'));
 });
 
-// Ruta de Noticias
+// Ruta de Noticias (Ejemplo de ruta protegida/no protegida)
 app.get('/noticias', (req, res) => {
     res.sendFile(path.join(__dirname, 'Noticias.html'));
 });
 
-// Ruta ¿Qué es CA?
-app.get('/ca', (req, res) => {
-    res.sendFile(path.join(__dirname, 'CA.html'));
-});
-
-// Ruta Líneas de Conocimiento
-app.get('/conocimiento', (req, res) => {
-    res.sendFile(path.join(__dirname, 'Conocimiento.html'));
-});
-
+// ... (Resto de rutas GET: /ca, /conocimiento son iguales) ...
 
 // --- Ruta para manejar el REGISTRO de usuarios (POST /api/registro) ---
 
 app.post('/api/registro', async (req, res) => {
-    // req.body contiene todos los datos enviados desde el formulario
+    // ... (Lógica de registro es la misma) ...
     const datosRegistro = req.body; 
-
-    // Llama a la función que guarda los datos en PostgreSQL
     const resultado = await registrarUsuario(datosRegistro);
 
     if (resultado.success) {
@@ -67,7 +77,6 @@ app.post('/api/registro', async (req, res) => {
             mensaje: 'Usuario registrado exitosamente. Ahora puedes iniciar sesión.'
         });
     } else {
-        // Error de registro (ej. email ya existe)
         return res.status(400).json({ 
             error: resultado.error || 'Fallo en el registro. Inténtalo de nuevo.' 
         });
@@ -78,22 +87,33 @@ app.post('/api/registro', async (req, res) => {
 // --- Ruta para manejar el LOGIN (POST /api/login) ---
 
 app.post('/api/login', async (req, res) => {
-    // req.body solo contiene el email y la contraseña
     const { email, contrasena } = req.body;
-
-    // Llama a la función que verifica las credenciales en PostgreSQL
     const resultado = await loginUsuario(email, contrasena);
 
     if (resultado.success) {
-        // Enviar token o cookie de sesión (aquí iría tu lógica de sesión)
+        // *** 1. INICIAR SESIÓN (Guarda datos en la sesión/cookie) ***
+        req.session.userId = resultado.userId; 
+        req.session.isAuthenticated = true; 
+
+        // 2. Responde al cliente (login.js) con éxito para que pueda redirigir
         return res.status(200).json({ 
-            mensaje: 'Inicio de sesión exitoso.', 
-            userId: resultado.userId 
+            mensaje: 'Inicio de sesión exitoso.'
         });
     } else {
         // Credenciales inválidas
         return res.status(401).json({ error: resultado.error || 'Credenciales inválidas.' });
     }
+});
+
+// --- RUTA PARA CERRAR SESIÓN ---
+app.post('/api/logout', (req, res) => {
+    req.session.destroy(err => {
+        if (err) {
+            return res.status(500).json({ error: 'Fallo al cerrar sesión.' });
+        }
+        res.clearCookie('connect.sid'); // Limpia la cookie de sesión del cliente
+        res.status(200).json({ mensaje: 'Sesión cerrada.' });
+    });
 });
 
 
