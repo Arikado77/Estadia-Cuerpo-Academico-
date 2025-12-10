@@ -2,8 +2,6 @@
 // Importar módulos esenciales
 const express = require('express');
 const path = require('path');
-// *** NUEVA IMPORTACIÓN PARA SESIONES ***
-const session = require('express-session'); 
 const app = express();
 const PORT = 3000;
 
@@ -17,18 +15,6 @@ const { registrarUsuario, loginUsuario } = require('./auth.controller');
 // Middleware para procesar datos de formularios POST
 app.use(express.json()); 
 app.use(express.urlencoded({ extended: true }));
-
-
-// *** CONFIGURACIÓN DE EXPRESS-SESSION ***
-app.use(session({
-    // ¡CLAVE SECRETA CRUCIAL! Cambia esta cadena por una cadena aleatoria y muy larga en producción.
-    secret: 'FXMy4ar9CZjHJ2025RRRA',
-    resave: false, // Evita guardar la sesión si no hay cambios
-    saveUninitialized: false, // Evita crear sesiones para usuarios no logueados
-    cookie: { 
-        maxAge: 3600000 // Sesión válida por 1 hora (en milisegundos)
-    }
-}));
 
 
 // Middleware para servir archivos estáticos (CSS, JS cliente, imágenes, HTML)
