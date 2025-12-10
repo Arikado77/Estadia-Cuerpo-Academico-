@@ -24,14 +24,14 @@ async function registrarUsuario(datosRegistro) {
         `;
         
         const values = [
-            datosRegistro.email,
-            contrasena_hash,
             datosRegistro.nombre,
+            datosRegistro.email,
             datosRegistro.universidad,
             datosRegistro.ciudad_estado,
             datosRegistro.linea_investigacion,
             datosRegistro.perfil_google_url,
-            datosRegistro.orcid_id
+            datosRegistro.orcid_id,
+            contrasena_hash
         ];
 
         const res = await db.query(queryText, values);
