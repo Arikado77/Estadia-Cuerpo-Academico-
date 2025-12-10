@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 linea_investigacion: document.getElementById('linea_investigacion').value,
                 perfil_google_url: document.getElementById('perfil_google_url').value,
                 orcid_id: document.getElementById('orcid_id').value,
-                contrasena: document.getElementById('contrasena').value
+                contrasena_hash: document.getElementById('contrasena').value
             };
             
             // 2. Validación: verificar que las contraseñas coincidan
