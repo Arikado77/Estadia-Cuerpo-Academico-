@@ -12,23 +12,34 @@
 <body>
 
     <div class="container" id="container">
-        <div class="form-container sign-up">
-            <form id="registerForm">
-                <h1>Crear Cuenta</h1>
-                    <br>
-                    <input type="text" placeholder="Nombre Completo" required>
-                    <input type="email" id="reg-email" placeholder="Correo electrónico" required>
-                    <input type="text" placeholder="Universidad" required>
-                    <input type="text" placeholder="Ciudad/Estado" required>
-                    <input type="text" placeholder="Línea de Investigación" required>
-                    <input type="url" placeholder="Perfil de Google (URL)">
-                    <input type="text" placeholder="ORCID (ej: 0000-0000-0000-0000)">
-                    <input type="password" id="reg-password" placeholder="Contraseña" required>
-                    <input type="password" id="confirm-password" placeholder="Confirmar Contraseña" required>
-                    <button type="submit">Registrarse</button>
-                    <p id="register-error" class="error-message"></p>
-            </form>
+    <div class="form-container sign-up">
+        <form id="registroForm"> 
+            <h1>Crear Cuenta</h1>
+            <br>
+            
+            <input type="text" name="nombre" id="nombre" placeholder="Nombre Completo" required>
+            
+            <input type="email" id="reg-email" name="email" placeholder="Correo electrónico" required>
+            
+            <input type="text" name="universidad" id="universidad" placeholder="Universidad" required>
+            
+            <input type="text" name="ciudad_estado" id="ciudad_estado" placeholder="Ciudad/Estado" required>
+            
+            <input type="text" name="linea_investigacion" id="linea_investigacion" placeholder="Línea de Investigación" required>
+            
+            <input type="url" name="perfil_google_url" id="perfil_google_url" placeholder="Perfil de Google (URL)">
+            
+            <input type="text" name="orcid_id" id="orcid_id" placeholder="ORCID (ej: 0000-0000-0000-0000)">
+            
+            <input type="password" id="reg-password" name="contrasena_hash" placeholder="Contraseña" required>
+            
+            <input type="password" id="confirm-password" name="confirmar_contrasena_hash" placeholder="Confirmar Contraseña" required>
+            
+            <button type="submit">Registrarse</button>
+            <p id="register-error" class="error-message"></p>
+        </form>
     </div>
+</div>
 
         <div class="form-container sign-in">
             <form id="login-form">
