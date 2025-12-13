@@ -74,7 +74,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const datosLogin = {
                 // ASUMO que el login usa los IDs originales del formulario de Login
                 email: document.getElementById('email').value,
-                contrasena: document.getElementById('contrasena').value // <-- ID del campo de contraseña del LOGIN
+                contrasena: document.getElementById('password').value // <-- ID del campo de contraseña del LOGIN
             };
             
             // 2. Validación básica
