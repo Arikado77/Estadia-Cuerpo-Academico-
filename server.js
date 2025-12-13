@@ -6,7 +6,7 @@ const app = express();
 const PORT = 3000;
 
 // Importar la lógica de registro/login de usuarios
-const { registrarUsuario, loginUsuario } = require('./auth.controller'); 
+const { registrarUsuario } = require('./auth.controller'); 
 
 // ===============================================
 // MIDDLEWARE (Manejo de Datos y Archivos Estáticos)
