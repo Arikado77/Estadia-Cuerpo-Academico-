@@ -54,6 +54,36 @@ async function registrarUsuario(datosRegistro) {
     }
 }
 
+// ===============================================
+// 2. FUNCIÓN DE LOGIN (NECESARIA PARA server.js)
+// ===============================================
+async function loginUsuario(email, contrasena) {
+    try {
+        // 1. Buscar al usuario por email
+        const queryText = 'SELECT contrasena_hash, id FROM usuarios WHERE email = $1';
+        const res = await db.query(queryText, [email]);
+
+        if (res.rows.length === 0) {
+            return { success: false, error: 'Usuario no encontrado.' };
+        }
+
+        const usuario = res.rows[0];
+        
+        // 2. Comparar la contraseña ingresada con el hash guardado
+        const match = await bcrypt.compare(contrasena, usuario.contrasena_hash);
+
+        if (match) {
+            return { success: true, userId: usuario.id };
+        } else {
+            return { success: false, error: 'Contraseña incorrecta.' };
+        }
+
+    } catch (error) {
+        console.error('Error de login en DB:', error.stack);
+        return { success: false, error: 'Fallo interno del servidor.' };
+    }
+}
+
 // Exportar ambas funciones para que server.js las pueda usar
 module.exports = {
     registrarUsuario,
