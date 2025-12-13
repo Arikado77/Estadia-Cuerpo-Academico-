@@ -53,4 +53,9 @@ async function registrarUsuario(datosRegistro) {
         return { success: false, error: 'Fallo interno del servidor.' };
     }
 }
-// ... (El resto del código es correcto)
+
+// Exportar ambas funciones para que server.js las pueda usar
+module.exports = {
+    registrarUsuario,
+    loginUsuario // ¡NUEVA FUNCIÓN EXPORTADA!
+};
