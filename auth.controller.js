@@ -57,5 +57,4 @@ async function registrarUsuario(datosRegistro) {
 // Exportar ambas funciones para que server.js las pueda usar
 module.exports = {
     registrarUsuario,
-    loginUsuario // ¡NUEVA FUNCIÓN EXPORTADA!
 };
