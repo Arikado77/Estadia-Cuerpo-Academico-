@@ -2,6 +2,7 @@
 // Importar módulos esenciales
 const express = require('express');
 const path = require('path');
+const session = require('express-session'); // <-- ¡IMPORTANTE! Módulo de Sesión
 const app = express();
 const PORT = 3000;
 
@@ -9,15 +10,27 @@ const PORT = 3000;
 const { registrarUsuario, loginUsuario } = require('./auth.controller'); 
 
 // ===============================================
+// MIDDLEWARE DE SESIÓN (¡CRÍTICO PARA EL LOGIN!)
+// ===============================================
+app.use(session({
+    secret: 'CLAVE_SECRETA_LARGA_Y_DIFICIL_DE_ADIVINAR_12345', // <-- ¡CAMBIA ESTO!
+    resave: false, // Evita guardar la sesión si no ha cambiado
+    saveUninitialized: false, // Evita guardar sesiones nuevas que no tienen datos
+    cookie: { secure: false } // Usar 'false' para HTTP (desarrollo), 'true' para HTTPS (producción)
+}));
+
+
+// ===============================================
 // MIDDLEWARE (Manejo de Datos y Archivos Estáticos)
 // ===============================================
 
-// Middleware para procesar datos de formularios POST
+// Middleware para procesar datos de formularios POST (JSON y URL-encoded)
 app.use(express.json()); 
 app.use(express.urlencoded({ extended: true }));
 
 
 // Middleware para servir archivos estáticos (CSS, JS cliente, imágenes, HTML)
+// Nota: Esto permite acceder a archivos como login.html, public/js/login.js, etc.
 app.use(express.static(__dirname)); 
 
 // ===============================================
@@ -26,10 +39,11 @@ app.use(express.static(__dirname));
 
 // --- Rutas para servir páginas HTML (GET) ---
 
-// Modificamos la ruta principal para verificar si el usuario está logueado
+// Ruta principal
 app.get('/', (req, res) => {
     // Si la sesión existe, envía el index.html
     if (req.session.isAuthenticated) {
+        // En un proyecto real, aquí cargarías datos del usuario logueado
         return res.sendFile(path.join(__dirname, 'index.html'));
     }
     // Si no está autenticado, puedes redirigir a login, o solo enviar el index.html
@@ -44,17 +58,14 @@ app.get('/login', (req, res) => {
     res.sendFile(path.join(__dirname, 'login.html'));
 });
 
-// Ruta de Noticias (Ejemplo de ruta protegida/no protegida)
+// Ruta de Noticias (Ejemplo)
 app.get('/noticias', (req, res) => {
     res.sendFile(path.join(__dirname, 'Noticias.html'));
 });
 
-// ... (Resto de rutas GET: /ca, /conocimiento son iguales) ...
-
 // --- Ruta para manejar el REGISTRO de usuarios (POST /api/registro) ---
 
 app.post('/api/registro', async (req, res) => {
-    // ... (Lógica de registro es la misma) ...
     const datosRegistro = req.body; 
     const resultado = await registrarUsuario(datosRegistro);
 
