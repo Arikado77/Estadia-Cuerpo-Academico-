@@ -64,7 +64,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     // === 2. LÓGICA DE INICIO DE SESIÓN (LOGIN) ===
-    const loginForm = document.getElementById('loginForm');
+    const loginForm = document.getElementById('login-form');
     
     if (loginForm) {
         loginForm.addEventListener('submit', async (e) => {
