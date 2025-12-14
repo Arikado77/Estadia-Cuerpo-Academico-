@@ -151,53 +151,47 @@
                 // --- LÓGICA DE ACTUALIZACIÓN DE ESTADO DE AUTENTICACIÓN ---
                 const authLinkContainer = document.getElementById('auth-link');
                 
-                // Función para crear el menú de perfil (Manteniendo tu estructura)
+                // --- FUNCIÓN PARA CREAR EL MENÚ DE PERFIL (Misma lógica que en index.html) ---
                 const createProfileDropdown = (userEmail) => {
-                    // Adaptamos tu lógica existente para construir el menú de perfil
                     
-                    // Contenedor principal del menú de perfil
                     const profileDropdown = document.createElement('div');
                     profileDropdown.className = 'profile-dropdown';
                     
-                    // Botón de saludo (ej. Hola, Carlos ↓)
                     const profileButton = document.createElement('button');
                     profileButton.className = 'profile-button';
                     const userName = userEmail ? userEmail.split('@')[0] : 'Usuario';
-                    profileButton.textContent = `Hola, ${userName} ↓`;
+                    profileButton.textContent = `Hola, ${userName} ▼`; // Flecha hacia abajo
                     
-                    // Contenido del menú desplegable
                     const dropdownContent = document.createElement('div');
                     dropdownContent.className = 'dropdown-content';
                     
-                    // Enlace para ver el perfil
                     const viewProfileLink = document.createElement('a');
                     viewProfileLink.href = 'Perfil.html';
                     viewProfileLink.textContent = 'Ver Perfil';
-
-                    // Botón de Cerrar Sesión (¡CORREGIDO A ENLACE CON ESTILO!)
-                    const logoutLink = document.createElement('a'); // <-- Cambiado de button a <a>
-                    logoutLink.href = '#'; // Usamos # para que parezca un enlace sin recargar
+                    
+                    // Enlace de Cerrar Sesión (con estilo CSS y lógica fetch)
+                    const logoutLink = document.createElement('a');
+                    logoutLink.href = '#'; 
                     logoutLink.textContent = 'Cerrar Sesión';
-                    logoutLink.className = 'logout-link-style'; // <-- ¡CLASE PARA ESTILIZAR!
+                    logoutLink.className = 'logout-link-style'; 
+                    
                     logoutLink.addEventListener('click', async (event) => {
-                        event.preventDefault(); // Evita que el enlace # recargue la página
+                        event.preventDefault(); 
                         try {
-                            // Llama a la ruta de logout en el servidor
                             await fetch('/api/logout', { method: 'POST' });
-                            // Limpia y recarga la página
                             window.location.reload(); 
                         } catch (error) {
                             console.error('Fallo al cerrar sesión:', error);
                             alert('Fallo al contactar al servidor para cerrar sesión.');
                         }
                     });
-
+                    
                     // Ensamblar el menú
                     dropdownContent.appendChild(viewProfileLink);
-                    dropdownContent.appendChild(logoutLink); // <-- Usamos el nuevo enlace
+                    dropdownContent.appendChild(logoutLink);
                     profileDropdown.appendChild(profileButton);
+                    profileDropdown.appendChild(dropdownContent);
 
-                    // Reemplazar el botón "Iniciar Sesión" con el menú de perfil
                     authLinkContainer.innerHTML = '';
                     authLinkContainer.appendChild(profileDropdown);
 
