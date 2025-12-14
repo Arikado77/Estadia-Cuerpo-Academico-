@@ -173,11 +173,14 @@
                     const viewProfileLink = document.createElement('a');
                     viewProfileLink.href = 'Perfil.html';
                     viewProfileLink.textContent = 'Ver Perfil';
-                    
-                    // Botón de Cerrar Sesión (Usaremos fetch para la ruta /api/logout)
-                    const logoutButton = document.createElement('button');
-                    logoutButton.textContent = 'Cerrar Sesión';
-                    logoutButton.addEventListener('click', async () => {
+
+                    // Botón de Cerrar Sesión (¡CORREGIDO A ENLACE CON ESTILO!)
+                    const logoutLink = document.createElement('a'); // <-- Cambiado de button a <a>
+                    logoutLink.href = '#'; // Usamos # para que parezca un enlace sin recargar
+                    logoutLink.textContent = 'Cerrar Sesión';
+                    logoutLink.className = 'logout-link-style'; // <-- ¡CLASE PARA ESTILIZAR!
+                    logoutLink.addEventListener('click', async (event) => {
+                        event.preventDefault(); // Evita que el enlace # recargue la página
                         try {
                             // Llama a la ruta de logout en el servidor
                             await fetch('/api/logout', { method: 'POST' });
@@ -188,12 +191,11 @@
                             alert('Fallo al contactar al servidor para cerrar sesión.');
                         }
                     });
-                    
+
                     // Ensamblar el menú
                     dropdownContent.appendChild(viewProfileLink);
-                    dropdownContent.appendChild(logoutButton);
+                    dropdownContent.appendChild(logoutLink); // <-- Usamos el nuevo enlace
                     profileDropdown.appendChild(profileButton);
-                    profileDropdown.appendChild(dropdownContent);
 
                     // Reemplazar el botón "Iniciar Sesión" con el menú de perfil
                     authLinkContainer.innerHTML = '';
