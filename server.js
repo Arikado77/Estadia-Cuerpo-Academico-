@@ -113,6 +113,21 @@ app.post('/api/logout', (req, res) => {
     });
 });
 
+// server.js - Añade esta ruta junto a tus otras app.get y app.post
+
+app.get('/api/status', (req, res) => {
+    // Si req.session.isAuthenticated es true, envía el estado 'logueado'
+    if (req.session.isAuthenticated) {
+        return res.json({ 
+            isAuthenticated: true, 
+            // Opcional: puedes enviar el ID para mostrar el nombre del usuario
+            userId: req.session.userId 
+        });
+    }
+    
+    // Si no hay sesión, envía el estado 'deslogueado'
+    res.json({ isAuthenticated: false });
+});
 
 // ===============================================
 // INICIO DEL SERVIDOR
