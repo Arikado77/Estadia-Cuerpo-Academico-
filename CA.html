@@ -149,77 +149,7 @@
     </footer>
 
     <script src="Script.js"></script>
-
-     <script>
-
-        document.addEventListener('DOMContentLoaded', () => {
-    const authLinkContainer = document.getElementById('auth-link');
-    const userLoggedIn = localStorage.getItem('userLoggedIn');
-    const userEmail = localStorage.getItem('userEmail');
-    const urlParams = new URLSearchParams(window.location.search);
-
-    if (urlParams.get('login') === 'success') {
-        const cleanUrl = window.location.origin + window.location.pathname;
-        window.location.replace(cleanUrl);
-        return;
-    }
-
-    if (userLoggedIn === 'true') {
-        // Si el usuario ha iniciado sesión, crea el menú desplegable de perfil
-        const profileDropdown = document.createElement('div');
-        profileDropdown.className = 'profile-dropdown';
-        
-        const profileButton = document.createElement('button');
-        profileButton.className = 'profile-button';
-        profileButton.textContent = `Hola, ${userEmail.split('@')[0]} ▼`;
-        
-        const dropdownContent = document.createElement('div');
-        dropdownContent.className = 'dropdown-content';
-        
-        const viewProfileLink = document.createElement('a');
-        viewProfileLink.href = 'perfil.html';
-        viewProfileLink.textContent = 'Ver Perfil';
-        
-        const logoutButton = document.createElement('button');
-        logoutButton.textContent = 'Cerrar Sesión';
-        logoutButton.className = 'logout-button-menu';
-        logoutButton.addEventListener('click', () => {
-            localStorage.clear();
-            window.location.reload();
-        });
-        
-        dropdownContent.appendChild(viewProfileLink);
-        dropdownContent.appendChild(logoutButton);
-        
-        profileDropdown.appendChild(profileButton);
-        profileDropdown.appendChild(dropdownContent);
-        
-        authLinkContainer.innerHTML = '';
-        authLinkContainer.appendChild(profileDropdown);
-
-        profileButton.addEventListener('click', () => {
-            dropdownContent.classList.toggle('show-dropdown');
-        });
-
-        window.onclick = function(event) {
-            if (!event.target.matches('.profile-button')) {
-                const dropdowns = document.getElementsByClassName('dropdown-content');
-                for (let i = 0; i < dropdowns.length; i++) {
-                    const openDropdown = dropdowns[i];
-                    if (openDropdown.classList.contains('show-dropdown')) {
-                        openDropdown.classList.remove('show-dropdown');
-                    }
-                }
-            }
-        };
-
-    } else {
-        // Si no hay sesión, muestra el botón de "Iniciar Sesión"
-        authLinkContainer.innerHTML = '<a href="login.html" class="login-button">Iniciar Sesión</a>';
-    }
-});
-
-    </script>
+    <script src="VerBotonPerfil.js"></script>
 
 </body>
 </html>
