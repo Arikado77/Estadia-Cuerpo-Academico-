@@ -9,6 +9,20 @@ const PORT = 3000;
 // Importar la lógica de registro/login de usuarios
 const { registrarUsuario, loginUsuario } = require('./auth.controller'); 
 
+// server.js - Añade esta función cerca del inicio, después de las importaciones
+function verificarAutenticacion(req, res, next) {
+    if (req.session.isAuthenticated) {
+        // Si está autenticado, pasa a la siguiente función (carga la página)
+        next();
+    } else {
+        // 1. GUARDA LA URL ORIGINAL a la que el usuario intentaba acceder
+        req.session.originalUrl = req.originalUrl;
+        
+        // 2. Redirige al login
+        res.redirect('/login'); 
+    }
+}
+
 // ===============================================
 // MIDDLEWARE DE SESIÓN (¡CRÍTICO PARA EL LOGIN!)
 // ===============================================
@@ -18,7 +32,6 @@ app.use(session({
     saveUninitialized: false, // Evita guardar sesiones nuevas que no tienen datos
     cookie: { secure: false } // Usar 'false' para HTTP (desarrollo), 'true' para HTTPS (producción)
 }));
-
 
 // ===============================================
 // MIDDLEWARE (Manejo de Datos y Archivos Estáticos)
@@ -59,7 +72,9 @@ app.get('/login', (req, res) => {
 });
 
 // Ruta de Noticias (Ejemplo)
-app.get('/noticias', (req, res) => {
+// server.js
+// Protege la ruta usando el middleware verificarAutenticacion
+app.get('/noticias', verificarAutenticacion, (req, res) => {
     res.sendFile(path.join(__dirname, 'Noticias.html'));
 });
 
@@ -83,21 +98,27 @@ app.post('/api/registro', async (req, res) => {
 
 // --- Ruta para manejar el LOGIN (POST /api/login) ---
 
+// server.js
 app.post('/api/login', async (req, res) => {
     const { email, contrasena } = req.body;
     const resultado = await loginUsuario(email, contrasena);
 
     if (resultado.success) {
-        // *** 1. INICIAR SESIÓN (Guarda datos en la sesión/cookie) ***
         req.session.userId = resultado.userId; 
         req.session.isAuthenticated = true; 
+        
+        // **NUEVA LÓGICA DE REDIRECCIÓN AQUÍ**
+        const redirectUrl = req.session.originalUrl || '/';
+        delete req.session.originalUrl; // Limpia la URL guardada
 
-        // 2. Responde al cliente (login.js) con éxito para que pueda redirigir
+        // En lugar de devolver un JSON, le decimos al cliente a dónde ir.
+        // NOTA: Como el login viene de un fetch (JS del cliente), debemos decirle al cliente que se redirija.
         return res.status(200).json({ 
-            mensaje: 'Inicio de sesión exitoso.'
+            mensaje: 'Inicio de sesión exitoso.',
+            redirect: redirectUrl // <-- Enviamos la URL de destino al cliente
         });
+        
     } else {
-        // Credenciales inválidas
         return res.status(401).json({ error: resultado.error || 'Credenciales inválidas.' });
     }
 });

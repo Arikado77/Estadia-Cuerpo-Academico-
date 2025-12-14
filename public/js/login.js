@@ -98,7 +98,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (respuesta.ok) {
                     alert('✅ ¡Inicio de sesión exitoso!');
                     // Redirige al index o al dashboard (debe coincidir con la ruta en server.js)
-                    window.location.href = '/'; 
+                    window.location.href = data.redirect; 
                 } else {
                     alert(`❌ Error al iniciar sesión: ${data.error || 'Credenciales inválidas o fallo desconocido.'}`);
                 }
