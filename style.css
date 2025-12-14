@@ -824,3 +824,34 @@ footer .right p{
 .show-dropdown {
     display: block;
 }
+
+
+
+
+
+
+
+
+
+/* ------------------------------------- */
+/* 1. OCULTAR EL CONTENIDO DEL DROPDOWN POR DEFECTO */
+/* ------------------------------------- */
+.dropdown-content {
+    display: none; /* Oculta el menú por defecto */
+    position: absolute; /* Permite que el menú flote sobre otros elementos */
+    background-color: #f9f9f9; /* Fondo claro del menú */
+    min-width: 160px; /* Ancho mínimo para que quepan las opciones */
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2); /* Sombra para que se vea flotante */
+    z-index: 10; /* Asegura que esté sobre otros elementos */
+    /* Posicionamiento: Ajusta estos valores según la posición de tu botón en el nav */
+    top: 100%; /* Aparece justo debajo del botón */
+    right: 0; /* Alinea el menú a la derecha del botón */
+    border-radius: 4px;
+}
+
+/* ------------------------------------- */
+/* 2. REGLA CLAVE: MOSTRAR CUANDO JS AÑADE LA CLASE */
+/* ------------------------------------- */
+.dropdown-content.show-dropdown {
+    display: block; /* Vuelve el menú visible cuando JavaScript añade esta clase */
+}

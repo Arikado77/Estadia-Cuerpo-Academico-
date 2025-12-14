@@ -116,72 +116,66 @@
     <script>
 
         document.addEventListener('DOMContentLoaded', () => {
-    const authLinkContainer = document.getElementById('auth-link');
-    const userLoggedIn = localStorage.getItem('userLoggedIn');
-    const userEmail = localStorage.getItem('userEmail');
-    const urlParams = new URLSearchParams(window.location.search);
+            const authLinkContainer = document.getElementById('auth-link');
+            const adminPanel = document.getElementById('admin-panel'); // Para mostrar el panel
 
-    if (urlParams.get('login') === 'success') {
-        const cleanUrl = window.location.origin + window.location.pathname;
-        window.location.replace(cleanUrl);
-        return;
-    }
+            // Función para crear el menú de perfil (adaptada para Noticias.html)
+            const createProfileDropdown = (userEmail) => {
+                // ... (Tu código de creación de profileDropdown, profileButton, dropdownContent, viewProfileLink, y logoutButton va aquí) ...
+                // Utiliza la lógica que ya tienes en index.html, asegurándote de que el logout use fetch('/api/logout')
 
-    if (userLoggedIn === 'true') {
-        // Si el usuario ha iniciado sesión, crea el menú desplegable de perfil
-        const profileDropdown = document.createElement('div');
-        profileDropdown.className = 'profile-dropdown';
-        
-        const profileButton = document.createElement('button');
-        profileButton.className = 'profile-button';
-        profileButton.textContent = `Hola, ${userEmail.split('@')[0]} ▼`;
-        
-        const dropdownContent = document.createElement('div');
-        dropdownContent.className = 'dropdown-content';
-        
-        const viewProfileLink = document.createElement('a');
-        viewProfileLink.href = 'perfil.html';
-        viewProfileLink.textContent = 'Ver Perfil';
-        
-        const logoutButton = document.createElement('button');
-        logoutButton.textContent = 'Cerrar Sesión';
-        logoutButton.className = 'logout-button-menu';
-        logoutButton.addEventListener('click', () => {
-            localStorage.clear();
-            window.location.reload();
-        });
-        
-        dropdownContent.appendChild(viewProfileLink);
-        dropdownContent.appendChild(logoutButton);
-        
-        profileDropdown.appendChild(profileButton);
-        profileDropdown.appendChild(dropdownContent);
-        
-        authLinkContainer.innerHTML = '';
-        authLinkContainer.appendChild(profileDropdown);
+                // EJEMPLO SIMPLIFICADO de cómo debe verse el resultado
+                authLinkContainer.innerHTML = `
+                    <div class="profile-dropdown">
+                        <button class="profile-button">Hola, ${userEmail.split('@')[0]} ▼</button>
+                        <div class="dropdown-content">
+                            <a href="perfil.html">Ver Perfil</a>
+                            <a href="#" id="logout-link" class="logout-link-style">Cerrar Sesión</a>
+                        </div>
+                    </div>
+                `;
+                
+                // Adjuntar el evento de CERRAR SESIÓN (IMPORTANTE)
+                document.getElementById('logout-link').addEventListener('click', async (e) => {
+                    e.preventDefault();
+                    await fetch('/api/logout', { method: 'POST' });
+                    window.location.reload();
+                });
+                
+                // Adjuntar el evento para mostrar/ocultar el dropdown
+                document.querySelector('.profile-button').addEventListener('click', () => {
+                    document.querySelector('.dropdown-content').classList.toggle('show-dropdown');
+                });
 
-        profileButton.addEventListener('click', () => {
-            dropdownContent.classList.toggle('show-dropdown');
-        });
+            }; // Fin de createProfileDropdown
 
-        window.onclick = function(event) {
-            if (!event.target.matches('.profile-button')) {
-                const dropdowns = document.getElementsByClassName('dropdown-content');
-                for (let i = 0; i < dropdowns.length; i++) {
-                    const openDropdown = dropdowns[i];
-                    if (openDropdown.classList.contains('show-dropdown')) {
-                        openDropdown.classList.remove('show-dropdown');
+            // 1. Verificar el estado de la sesión
+            fetch('/api/status')
+                .then(res => {
+                    if (!res.ok) {
+                        // Si la red falla o el servidor devuelve un error, asumimos no autenticado.
+                        throw new Error('No se pudo conectar para verificar la sesión.');
                     }
-                }
-            }
-        };
-
-    } else {
-        // Si no hay sesión, muestra el botón de "Iniciar Sesión"
-        authLinkContainer.innerHTML = '<a href="login.html" class="login-button">Iniciar Sesión</a>';
-    }
-});
-
+                    return res.json();
+                })
+                .then(data => {
+                    if (data.isAuthenticated) {
+                        // A. SESIÓN ACTIVA: Cargar la interfaz
+                        createProfileDropdown(data.userEmail); // Asume que el servidor devuelve userEmail
+                        adminPanel.style.display = 'block'; // Mostrar el panel
+                    } else {
+                        // B. SESIÓN INACTIVA: REDIRIGIR A LOGIN (PROTECCIÓN)
+                        alert('Debes iniciar sesión para ver esta sección.');
+                        window.location.href = '/login.html';
+                    }
+                })
+                .catch(error => {
+                    console.error('Fallo al verificar la sesión:', error);
+                    // Si hay un fallo de red o servidor, redirigir por seguridad
+                    window.location.href = '/login.html'; 
+                });
+        });
+        
     </script>
     
 </body>
