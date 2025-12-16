@@ -9,6 +9,7 @@ const PORT = 3000;
 // Importar la lógica de registro/login de usuarios
 const { registrarUsuario, loginUsuario } = require('./auth.controller'); 
 const db = require('./db.config');
+const bcrypt = require('bcrypt'); // <-- ¡Añade esta línea!
 
 // server.js - Añade esta función cerca del inicio, después de las importaciones
 function verificarAutenticacion(req, res, next) {
@@ -120,6 +121,56 @@ app.get('/api/usuario/perfil', async (req, res) => {
     }
 });
 
+const multer = require('multer');
+
+// Configurar dónde se guardan las fotos
+const storage = multer.diskStorage({
+    destination: 'public/uploads/',
+    filename: (req, file, cb) => {
+        cb(null, 'perfil-' + req.session.userId + path.extname(file.originalname));
+    }
+});
+const upload = multer({ storage: storage });
+
+// Ruta para subir la foto
+app.post('/api/usuario/foto', upload.single('foto'), async (req, res) => {
+    if (!req.file) return res.status(400).send('No se subió archivo.');
+    
+    const urlFoto = '/uploads/' + req.file.filename;
+    
+    try {
+        // Guardamos la ruta de la foto en la base de datos
+        // (Asegúrate de tener una columna 'foto_url' en tu tabla usuarios)
+        await db.query('UPDATE usuarios SET foto_url = $1 WHERE id = $2', [urlFoto, req.session.userId]);
+        res.json({ success: true, url: urlFoto });
+    } catch (error) {
+        res.status(500).json({ success: false });
+    }
+});
+
+app.post('/api/usuario/actualizar', async (req, res) => {
+    const userId = req.session.userId;
+    const { nombre, universidad, ciudad_estado, linea_investigacion, perfil_google_url, orcid_id } = req.body;
+
+    if (!userId) return res.status(401).json({ success: false });
+
+    try {
+        const queryText = `
+            UPDATE usuarios 
+            SET nombre = $1, universidad = $2, ciudad_estado = $3, 
+                linea_investigacion = $4, perfil_google_url = $5, orcid_id = $6
+            WHERE id = $7
+        `;
+        const values = [nombre, universidad, ciudad_estado, linea_investigacion, perfil_google_url, orcid_id, userId];
+        
+        await db.query(queryText, values);
+        res.json({ success: true, mensaje: '¡Perfil actualizado con éxito!' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, error: 'Error al actualizar' });
+    }
+});
+
 
 // --- Ruta para manejar el LOGIN (POST /api/login) ---
 
@@ -145,6 +196,32 @@ app.post('/api/login', async (req, res) => {
         
     } else {
         return res.status(401).json({ error: resultado.error || 'Credenciales inválidas.' });
+    }
+});
+
+// Ruta para cambiar contraseña
+app.post('/api/usuario/cambiar-contrasena', async (req, res) => {
+    const { passwordActual, passwordNueva } = req.body;
+    const userId = req.session.userId;
+
+    if (!userId) return res.status(401).json({ success: false });
+
+    try {
+        // 1. Obtener el hash actual de la DB
+        const userRes = await db.query('SELECT contrasena_hash FROM usuarios WHERE id = $1', [userId]);
+        const match = await bcrypt.compare(passwordActual, userRes.rows[0].contrasena_hash);
+
+        if (!match) {
+            return res.json({ success: false, error: 'La contraseña actual es incorrecta.' });
+        }
+
+        // 2. Generar nuevo hash y guardar
+        const nuevoHash = await bcrypt.hash(passwordNueva, 10);
+        await db.query('UPDATE usuarios SET contrasena_hash = $1 WHERE id = $2', [nuevoHash, userId]);
+
+        res.json({ success: true, mensaje: 'Contraseña actualizada correctamente.' });
+    } catch (error) {
+        res.status(500).json({ success: false, error: 'Error interno.' });
     }
 });
 
