@@ -135,6 +135,24 @@ app.post('/api/login', async (req, res) => {
     }
 });
 
+app.get('/api/status', async (req, res) => {
+    if (req.session.isAuthenticated) {
+        try {
+            // Buscamos el nombre del usuario en la DB
+            const result = await db.query('SELECT nombre FROM usuarios WHERE id = $1', [req.session.userId]);
+            const nombreUsuario = result.rows[0].nombre;
+
+            return res.json({ 
+                isAuthenticated: true, 
+                nombre: nombreUsuario // <-- Enviamos el nombre real
+            });
+        } catch (error) {
+            return res.json({ isAuthenticated: true, nombre: 'Usuario' });
+        }
+    }
+    res.json({ isAuthenticated: false });
+});
+
 app.post('/api/usuario/cambiar-contrasena', async (req, res) => {
     const { passwordActual, passwordNueva } = req.body;
     const userId = req.session.userId;

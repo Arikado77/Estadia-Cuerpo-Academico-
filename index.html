@@ -146,120 +146,44 @@
     <script src="login.js"></script>
 
         <script>
-            document.addEventListener('DOMContentLoaded', () => {
+            
+            // Busca esta parte en tu script de index.html y actualízala:
+            const createProfileDropdown = (userName) => {
+                // Si el nombre es muy largo, solo mostramos el primer nombre
+                const primerNombre = userName ? userName.split(' ')[0] : 'Usuario';
 
-                // --- LÓGICA DE ACTUALIZACIÓN DE ESTADO DE AUTENTICACIÓN ---
-                const authLinkContainer = document.getElementById('auth-link');
-                
-                // --- FUNCIÓN PARA CREAR EL MENÚ DE PERFIL (Misma lógica que en index.html) ---
-                const createProfileDropdown = (userEmail) => {
-                    
-                    const profileDropdown = document.createElement('div');
-                    profileDropdown.className = 'profile-dropdown';
-                    
-                    const profileButton = document.createElement('button');
-                    profileButton.className = 'profile-button';
-                    const userName = userEmail ? userEmail.split('@')[0] : 'Usuario';
-                    profileButton.textContent = `Hola, ${userName} ▼`; // Flecha hacia abajo
-                    
-                    const dropdownContent = document.createElement('div');
-                    dropdownContent.className = 'dropdown-content';
-                    
-                    const viewProfileLink = document.createElement('a');
-                    viewProfileLink.href = 'Perfil.html';
-                    viewProfileLink.textContent = 'Ver Perfil';
-                    
-                    // Enlace de Cerrar Sesión (con estilo CSS y lógica fetch)
-                    const logoutLink = document.createElement('a');
-                    logoutLink.href = '#'; 
-                    logoutLink.textContent = 'Cerrar Sesión';
-                    logoutLink.className = 'logout-link-style'; 
-                    
-                    logoutLink.addEventListener('click', async (event) => {
-                        event.preventDefault(); 
-                        try {
-                            await fetch('/api/logout', { method: 'POST' });
-                            window.location.reload(); 
-                        } catch (error) {
-                            console.error('Fallo al cerrar sesión:', error);
-                            alert('Fallo al contactar al servidor para cerrar sesión.');
-                        }
-                    });
-                    
-                    // Ensamblar el menú
-                    dropdownContent.appendChild(viewProfileLink);
-                    dropdownContent.appendChild(logoutLink);
-                    profileDropdown.appendChild(profileButton);
-                    profileDropdown.appendChild(dropdownContent);
+                authLinkContainer.innerHTML = `
+                    <div class="profile-dropdown">
+                        <button class="profile-button">Hola, ${primerNombre} ▼</button>
+                        <div class="dropdown-content" id="myDropdown">
+                            <a href="Perfil.html"><i class='bx bx-user'></i> Ver Perfil</a>
+                            <a href="#" id="logout-link"><i class='bx bx-log-out'></i> Cerrar Sesión</a>
+                        </div>
+                    </div>
+                `;
 
-                    authLinkContainer.innerHTML = '';
-                    authLinkContainer.appendChild(profileDropdown);
-
-                    // Lógica para mostrar/ocultar el dropdown
-                    profileButton.addEventListener('click', () => {
-                        dropdownContent.classList.toggle('show-dropdown');
-                    });
-
-                    // Cerrar el dropdown al hacer clic fuera
-                    window.onclick = function(event) {
-                        if (!event.target.matches('.profile-button')) {
-                            const dropdowns = document.getElementsByClassName('dropdown-content');
-                            for (let i = 0; i < dropdowns.length; i++) {
-                                const openDropdown = dropdowns[i];
-                                if (openDropdown.classList.contains('show-dropdown')) {
-                                    openDropdown.classList.remove('show-dropdown');
-                                }
-                            }
-                        }
-                    };
-                };
-                
-                // 1. CONSULTAR AL SERVIDOR EL ESTADO DE AUTENTICACIÓN
-                if (authLinkContainer) {
-                    fetch('/api/status')
-                        .then(res => {
-                            if (!res.ok) {
-                                throw new Error('Respuesta de red no exitosa');
-                            }
-                            return res.json();
-                        })
-                        .then(data => {
-                            if (data.isAuthenticated) {
-                                // *** USUARIO LOGUEADO: Mostrar menú de Perfil ***
-                                createProfileDropdown(data.userEmail); // Asume que el servidor devuelve userEmail
-                            } else {
-                                // *** USUARIO DESLOGUEADO: Mostrar Iniciar Sesión ***
-                                // Esto es el valor por defecto en tu HTML, pero lo aseguramos:
-                                authLinkContainer.innerHTML = '<a href="login.html" class="login-button">Iniciar Sesión</a>';
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Fallo al verificar la sesión con el servidor:', error);
-                            // Si la red falla, dejamos el estado de "Iniciar Sesión"
-                            authLinkContainer.innerHTML = '<a href="login.html" class="login-button">Iniciar Sesión</a>';
-                        });
-                }
-
-                // --- CÓDIGO DE LAS TARJETAS DE MIEMBROS (NO MODIFICADO) ---
-                // (Asegúrate de pegar aquí la lógica de expansión de tarjetas si estaba en este bloque)
-                const memberCards = document.querySelectorAll('.member-card');
-                const allDetails = document.querySelectorAll('.member-details');
-
-                memberCards.forEach(card => {
-                    card.addEventListener('click', (event) => {
-                        if (event.target.closest('a')) {
-                            return;
-                        }
-                        allDetails.forEach(details => {
-                            details.classList.toggle('expanded');
-                        });
-                    });
+                // Lógica para el botón de cerrar sesión
+                document.getElementById('logout-link').addEventListener('click', async (e) => {
+                    e.preventDefault();
+                    await fetch('/api/logout', { method: 'POST' });
+                    window.location.reload();
                 });
 
-                // --- CÓDIGO DE ANIMACIÓN DE INTRO (NO MODIFICADO) ---
-                // (Asegúrate de pegar aquí tu lógica de intro screen si estaba en este bloque)
-                // const introScreen = document.getElementById('intro-screen'); ...
-            });
+                // Lógica para mostrar/ocultar (Toggle)
+                const btn = authLinkContainer.querySelector('.profile-button');
+                const content = authLinkContainer.querySelector('.dropdown-content');
+                btn.onclick = () => content.classList.toggle('show-dropdown');
+            };
+
+            // Y actualiza el fetch que llama a la función:
+            fetch('/api/status')
+                .then(res => res.json())
+                .then(data => {
+                    if (data.isAuthenticated) {
+                        createProfileDropdown(data.nombre); // Pasamos el nombre real que viene del server
+                    }
+                });
+
         </script>
 
     </body>

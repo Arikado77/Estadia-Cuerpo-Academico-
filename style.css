@@ -825,14 +825,6 @@ footer .right p{
     display: block;
 }
 
-
-
-
-
-
-
-
-
 /* ------------------------------------- */
 /* 1. OCULTAR EL CONTENIDO DEL DROPDOWN POR DEFECTO */
 /* ------------------------------------- */
@@ -854,4 +846,50 @@ footer .right p{
 /* ------------------------------------- */
 .dropdown-content.show-dropdown {
     display: block; /* Vuelve el menú visible cuando JavaScript añade esta clase */
+}
+
+
+
+/* Estilo para el contenedor del dropdown */
+.profile-dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.profile-button {
+    background-color: #1a2a4d; /* Color azul oscuro como tu logo */
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-family: inherit;
+    font-weight: bold;
+}
+
+.dropdown-content {
+    display: none; /* Oculto por defecto */
+    position: absolute;
+    right: 0;
+    background-color: white;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px rgba(0,0,0,0.2);
+    border-radius: 5px;
+    z-index: 1000;
+}
+
+.dropdown-content a {
+    color: #333;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+}
+
+.dropdown-content a:hover {
+    background-color: #f1f1f1;
+}
+
+/* Clase que se activa con el JS */
+.show-dropdown {
+    display: block !important;
 }
