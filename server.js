@@ -8,6 +8,7 @@ const PORT = 3000;
 
 // Importar la lógica de registro/login de usuarios
 const { registrarUsuario, loginUsuario } = require('./auth.controller'); 
+const db = require('./db.config');
 
 // server.js - Añade esta función cerca del inicio, después de las importaciones
 function verificarAutenticacion(req, res, next) {
@@ -97,14 +98,14 @@ app.post('/api/registro', async (req, res) => {
 
 // En tu server.js o archivo de rutas
 app.get('/api/usuario/perfil', async (req, res) => {
-    // Asumiendo que guardas el ID del usuario en la sesión al hacer login
     const userId = req.session.userId; 
 
     if (!userId) {
+        // Si no hay ID en la sesión, respondemos con 401
         return res.status(401).json({ success: false, error: 'No autorizado' });
     }
-
     try {
+        // Ahora 'db' ya existe porque lo importamos arriba
         const queryText = 'SELECT nombre, email, universidad, ciudad_estado, linea_investigacion, perfil_google_url, orcid_id FROM usuarios WHERE id = $1';
         const result = await db.query(queryText, [userId]);
 
@@ -114,6 +115,7 @@ app.get('/api/usuario/perfil', async (req, res) => {
             res.status(404).json({ success: false, error: 'Usuario no encontrado' });
         }
     } catch (error) {
+        console.error("Error en DB:", error);
         res.status(500).json({ success: false, error: 'Error de servidor' });
     }
 });
