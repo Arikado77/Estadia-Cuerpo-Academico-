@@ -3,86 +3,98 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Perfil de Usuario - Cuerpo Académico</title>
+    <title>Perfil de Usuario - CATICO</title>
     <link rel="stylesheet" href="Perfil.css"> 
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
 </head>
 <body>
-    <header>
-        </header>
 
     <main class="profile-container">
         
-        <h1 class="profile-title">Mi Perfil</h1>
+        <h1 class="profile-title">Mi Perfil Académico</h1>
 
         <div class="profile-layout">
             
             <div class="profile-column profile-sidebar">
                 <div class="profile-card profile-info-card">
-                    <h2><i class='bx bxs-user-circle'></i> Información Básica</h2>
+                    <h2><i class='bx bxs-user-circle'></i> Miembro del CA</h2>
                     
                     <div class="profile-photo-area">
-                        <img src="ruta/a/tu/foto_default.jpg" alt="Foto de Perfil" class="profile-photo">
+                        <img src="https://via.placeholder.com/150" alt="Foto de Perfil" class="profile-photo" id="display-photo">
                         <button class="upload-btn">Cambiar Foto</button>
                     </div>
 
-                    <p><strong>Rol en el CA:</strong> <span id="user-role">Miembro del CA</span></p>
-                    <p><strong>Email:</strong> <span id="user-email">carlos.ejemplo@ut.edu</span></p>
+                    <div class="basic-info-display">
+                        <p><strong>Usuario:</strong> <span id="user-name-display">Cargando...</span></p>
+                        <p><strong>Email:</strong> <span id="user-email">cargando@correo.com</span></p>
+                    </div>
 
-                    <button class="action-btn-primary"><i class='bx bxs-lock-alt'></i> Cambiar Contraseña</button>
-                    <button class="action-btn-secondary"><i class='bx bx-log-out'></i> Cerrar Sesión</button>
+                    <hr>
+                    <button class="action-btn-primary"><i class='bx bxs-lock-alt'></i> Seguridad</button>
+                    <button class="action-btn-secondary" id="logout-btn"><i class='bx bx-log-out'></i> Cerrar Sesión</button>
                 </div>
                 
                 <div class="profile-card">
-                    <h2><i class='bx bxs-file-doc'></i> Documentos</h2>
-                    <p>Sube y gestiona tu CV y otros documentos de perfil.</p>
-                    <button class="action-btn-secondary"><i class='bx bxs-cloud-upload'></i> Subir CV (PDF)</button>
-                    <a href="#" class="profile-link">Ver CV Actual</a>
+                    <h2><i class='bx bxs-file-doc'></i> Documentación</h2>
+                    <p>Gestiona tu CV en formato PDF para el repositorio.</p>
+                    <button class="action-btn-secondary"><i class='bx bxs-cloud-upload'></i> Subir PDF</button>
                 </div>
             </div>
 
             <div class="profile-column profile-main-content">
                 
                 <div class="profile-card editable-data-card">
-                    <h2><i class='bx bxs-edit-alt'></i> Editar Datos de Perfil</h2>
-                    <form>
-                        <div class="form-group">
-                            <label for="full-name">Nombre Completo</label>
-                            <input type="text" id="full-name" value="Carlos Pérez" required>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="affiliation">Afiliación/Departamento</label>
-                            <input type="text" id="affiliation" value="Ingeniería de Software">
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="bio">Biografía / Resumen Profesional</label>
-                            <textarea id="bio" rows="4">Breve resumen de tu experiencia académica y profesional.</textarea>
+                    <h2><i class='bx bxs-edit-alt'></i> Datos del Investigador</h2>
+                    <form id="perfil-form">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="full-name">Nombre Completo</label>
+                                <input type="text" id="full-name" placeholder="Tu nombre" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="university">Universidad / Institución</label>
+                                <input type="text" id="university" placeholder="Ej. UTCH">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="city-state">Ciudad y Estado</label>
+                                <input type="text" id="city-state" placeholder="Ej. Chihuahua, Chih.">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="research-line">Línea de Investigación</label>
+                                <input type="text" id="research-line" placeholder="Ej. Seguridad Informática">
+                            </div>
                         </div>
 
-                        <button type="submit" class="action-btn-primary"><i class='bx bxs-save'></i> Guardar Cambios</button>
+                        <div class="form-group">
+                            <label for="bio">Resumen Profesional (Opcional)</label>
+                            <textarea id="bio" rows="3" placeholder="Breve descripción de tu trayectoria..."></textarea>
+                        </div>
+
+                        <h3><i class='bx bx-link-external'></i> Enlaces Académicos</h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="orcid">ORCID ID</label>
+                                <input type="text" id="orcid" placeholder="0000-0000-0000-0000">
+                            </div>
+                            <div class="form-group">
+                                <label for="google-profile">URL Google Scholar</label>
+                                <input type="url" id="google-profile" placeholder="https://scholar.google.com/...">
+                            </div>
+                        </div>
+
+                        <button type="submit" class="action-btn-primary"><i class='bx bxs-save'></i> Actualizar Información</button>
                     </form>
                 </div>
 
-                <div class="profile-card academic-section">
-                    <h2><i class='bx bxs-graduation'></i> Información Académica</h2>
-                    
-                    <div class="academic-links">
-                        <p><i class='bx bxs-book'></i> **ORCID:** <a href="#" class="profile-link">Enlazar ORCID</a></p>
-                        <p><i class='bx bxl-google'></i> **Google Scholar:** <a href="#" class="profile-link">Ver Citas Académicas</a></p>
-                    </div>
-                    
-                    <h3><i class='bx bx-list-ul'></i> Líneas de Investigación</h3>
-                    <ul>
-                        <li><i class='bx bx-check-square'></i> Tecnologías Inmersivas</li>
-                        <li><i class='bx bx-check-square'></i> Sistemas Embebidos</li>
-                    </ul>
-
-                    <h3><i class='bx bxs-briefcase'></i> Proyectos Activos</h3>
-                    <ul class="project-list">
-                        <li>Proyecto 1: Desarrollo de Realidad Aumentada</li>
-                        <li>Proyecto 2: Optimización de Sensores IoT</li>
+                <div class="profile-card academic-preview">
+                    <h2><i class='bx bxs-graduation'></i> Vista Pública</h2>
+                    <p>Así es como apareces en las publicaciones del sitio.</p>
+                    <ul class="preview-list">
+                        <li><i class='bx bx-badge-check'></i> <strong>Investigación:</strong> <span id="preview-line">...</span></li>
+                        <li><i class='bx bx-buildings'></i> <strong>Adscripción:</strong> <span id="preview-uni">...</span></li>
                     </ul>
                 </div>
 
@@ -91,5 +103,6 @@
     </main>
 
     <script src="Perfil.js"></script>
+    <script src="server.js"></script>
 </body>
 </html>

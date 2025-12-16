@@ -95,6 +95,29 @@ app.post('/api/registro', async (req, res) => {
     }
 });
 
+// En tu server.js o archivo de rutas
+app.get('/api/usuario/perfil', async (req, res) => {
+    // Asumiendo que guardas el ID del usuario en la sesión al hacer login
+    const userId = req.session.userId; 
+
+    if (!userId) {
+        return res.status(401).json({ success: false, error: 'No autorizado' });
+    }
+
+    try {
+        const queryText = 'SELECT nombre, email, universidad, ciudad_estado, linea_investigacion, perfil_google_url, orcid_id FROM usuarios WHERE id = $1';
+        const result = await db.query(queryText, [userId]);
+
+        if (result.rows.length > 0) {
+            res.json({ success: true, user: result.rows[0] });
+        } else {
+            res.status(404).json({ success: false, error: 'Usuario no encontrado' });
+        }
+    } catch (error) {
+        res.status(500).json({ success: false, error: 'Error de servidor' });
+    }
+});
+
 
 // --- Ruta para manejar el LOGIN (POST /api/login) ---
 
