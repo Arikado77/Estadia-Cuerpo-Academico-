@@ -147,42 +147,58 @@
 
         <script>
             
-            // Busca esta parte en tu script de index.html y actualízala:
-            const createProfileDropdown = (userName) => {
-                // Si el nombre es muy largo, solo mostramos el primer nombre
-                const primerNombre = userName ? userName.split(' ')[0] : 'Usuario';
+            document.addEventListener('DOMContentLoaded', () => {
+                const authLinkContainer = document.getElementById('auth-link');
 
-                authLinkContainer.innerHTML = `
-                    <div class="profile-dropdown">
-                        <button class="profile-button">Hola, ${primerNombre} ▼</button>
-                        <div class="dropdown-content" id="myDropdown">
-                            <a href="Perfil.html"><i class='bx bx-user'></i> Ver Perfil</a>
-                            <a href="#" id="logout-link"><i class='bx bx-log-out'></i> Cerrar Sesión</a>
+                // Función para renderizar el menú (con el estilo de tu página)
+                const renderUserMenu = (name) => {
+                    const firstName = name ? name.split(' ')[0] : 'Usuario';
+                    authLinkContainer.innerHTML = `
+                        <div class="profile-dropdown">
+                            <button class="profile-button">Hola, ${firstName} ▼</button>
+                            <div class="dropdown-content">
+                                <a href="Perfil.html"><i class='bx bx-user'></i> Ver Perfil</a>
+                                <a href="#" id="logout-btn-index"><i class='bx bx-log-out'></i> Cerrar Sesión</a>
+                            </div>
                         </div>
-                    </div>
-                `;
+                    `;
 
-                // Lógica para el botón de cerrar sesión
-                document.getElementById('logout-link').addEventListener('click', async (e) => {
-                    e.preventDefault();
-                    await fetch('/api/logout', { method: 'POST' });
-                    window.location.reload();
+                    // Lógica del botón de Logout
+                    document.getElementById('logout-btn-index').addEventListener('click', async (e) => {
+                        e.preventDefault();
+                        await fetch('/api/logout', { method: 'POST' });
+                        window.location.reload();
+                    });
+
+                    // Toggle del menú
+                    const btn = authLinkContainer.querySelector('.profile-button');
+                    const dropdown = authLinkContainer.querySelector('.dropdown-content');
+                    btn.onclick = (e) => {
+                        e.stopPropagation();
+                        dropdown.classList.toggle('show-dropdown');
+                    };
+                };
+
+                // Consultar sesión usando la ruta de perfil (que es la más confiable)
+                fetch('/api/usuario/perfil')
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.success) {
+                            renderUserMenu(data.user.nombre);
+                        } else {
+                            authLinkContainer.innerHTML = '<a href="login.html" class="login-button">Iniciar Sesión</a>';
+                        }
+                    })
+                    .catch(() => {
+                        authLinkContainer.innerHTML = '<a href="login.html" class="login-button">Iniciar Sesión</a>';
+                    });
+
+                // Cerrar dropdown si haces clic afuera
+                window.addEventListener('click', () => {
+                    const openDropdown = document.querySelector('.dropdown-content.show-dropdown');
+                    if (openDropdown) openDropdown.classList.remove('show-dropdown');
                 });
-
-                // Lógica para mostrar/ocultar (Toggle)
-                const btn = authLinkContainer.querySelector('.profile-button');
-                const content = authLinkContainer.querySelector('.dropdown-content');
-                btn.onclick = () => content.classList.toggle('show-dropdown');
-            };
-
-            // Y actualiza el fetch que llama a la función:
-            fetch('/api/status')
-                .then(res => res.json())
-                .then(data => {
-                    if (data.isAuthenticated) {
-                        createProfileDropdown(data.nombre); // Pasamos el nombre real que viene del server
-                    }
-                });
+            });
 
         </script>
 

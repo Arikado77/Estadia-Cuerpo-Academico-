@@ -893,3 +893,49 @@ footer .right p{
 .show-dropdown {
     display: block !important;
 }
+
+/* Asegura que el dropdown se muestre cuando tenga la clase */
+.show-dropdown {
+    display: block !important;
+}
+
+/* Estilo para que el botón se vea como tus otros botones de la nav */
+.profile-button {
+    background: #1a2a4d; /* Color azul de tu logo */
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 600;
+    font-family: inherit;
+}
+
+.profile-dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    right: 0;
+    background: white;
+    min-width: 150px;
+    box-shadow: 0px 4px 12px rgba(0,0,0,0.1);
+    border-radius: 8px;
+    margin-top: 5px;
+    z-index: 1000;
+}
+
+.dropdown-content a {
+    color: #333;
+    padding: 10px 15px;
+    text-decoration: none;
+    display: block;
+    font-size: 14px;
+}
+
+.dropdown-content a:hover {
+    background: #f4f4f4;
+}
