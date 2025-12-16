@@ -47,6 +47,7 @@ app.use(session({
 app.use(express.json()); 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(__dirname)); 
+app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 
 // Función de protección de rutas
 function verificarAutenticacion(req, res, next) {
@@ -110,13 +111,23 @@ app.post('/api/usuario/actualizar', async (req, res) => {
 
 // --- API FOTO ---
 app.post('/api/usuario/foto', upload.single('foto'), async (req, res) => {
-    if (!req.file || !req.session.userId) return res.status(400).json({ success: false });
-    const urlFoto = '/public/uploads/' + req.file.filename;
+    // Verificamos que haya archivo y sesión
+    if (!req.file || !req.session.userId) {
+        return res.status(400).json({ success: false, error: 'No hay archivo o sesión' });
+    }
+
+    // CORRECCIÓN: La URL para el navegador no debe llevar "/public"
+    const urlFoto = '/uploads/' + req.file.filename; 
+    
     try {
+        // Guardamos la URL en la base de datos
         await db.query('UPDATE usuarios SET foto_url = $1 WHERE id = $2', [urlFoto, req.session.userId]);
+        
+        // Devolvemos éxito y la URL correcta al frontend
         res.json({ success: true, url: urlFoto });
     } catch (error) {
-        res.status(500).json({ success: false });
+        console.error("Error en DB al actualizar foto:", error);
+        res.status(500).json({ success: false, error: 'Error interno del servidor' });
     }
 });
 
@@ -156,18 +167,32 @@ app.get('/api/status', async (req, res) => {
 app.post('/api/usuario/cambiar-contrasena', async (req, res) => {
     const { passwordActual, passwordNueva } = req.body;
     const userId = req.session.userId;
-    if (!userId) return res.status(401).json({ success: false });
+
+    if (!userId) return res.status(401).json({ success: false, error: 'Sesión expirada' });
 
     try {
+        // 1. Obtener el hash actual
         const userRes = await db.query('SELECT contrasena_hash FROM usuarios WHERE id = $1', [userId]);
-        const match = await bcrypt.compare(passwordActual, userRes.rows[0].contrasena_hash);
-        if (!match) return res.json({ success: false, error: 'Contraseña actual incorrecta.' });
+        
+        if (userRes.rows.length === 0) {
+            return res.status(404).json({ success: false, error: 'Usuario no encontrado' });
+        }
 
+        // 2. Comparar con bcrypt
+        const match = await bcrypt.compare(passwordActual, userRes.rows[0].contrasena_hash);
+
+        if (!match) {
+            return res.json({ success: false, error: 'La contraseña actual es incorrecta.' });
+        }
+
+        // 3. Hashear la nueva y guardar
         const nuevoHash = await bcrypt.hash(passwordNueva, 10);
         await db.query('UPDATE usuarios SET contrasena_hash = $1 WHERE id = $2', [nuevoHash, userId]);
-        res.json({ success: true, mensaje: 'Contraseña actualizada.' });
+
+        res.json({ success: true, mensaje: 'Contraseña actualizada correctamente.' });
     } catch (error) {
-        res.status(500).json({ success: false });
+        console.error("Error al cambiar pass:", error);
+        res.status(500).json({ success: false, error: 'Error interno del servidor' });
     }
 });
 
