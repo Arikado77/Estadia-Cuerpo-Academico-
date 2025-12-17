@@ -327,6 +327,60 @@ app.post('/api/usuario/actualizar-avatar', async (req, res) => {
     }
 });
 
+// ===============================================
+// API - GESTIÓN DE NOTICIAS (DINÁMICO)
+// ===============================================
+
+// 1. Obtener todas las noticias (Público)
+app.get('/api/noticias', async (req, res) => {
+    try {
+        const result = await db.query(`
+            SELECT n.id, n.titulo, n.contenido, n.imagen_url, n.fecha_creacion, u.nombre as autor 
+            FROM noticias n 
+            LEFT JOIN usuarios u ON n.autor_id = u.id 
+            ORDER BY n.fecha_creacion DESC
+        `);
+        res.json({ success: true, noticias: result.rows });
+    } catch (error) {
+        console.error("Error al obtener noticias:", error);
+        res.status(500).json({ success: false, error: 'Error al cargar noticias' });
+    }
+});
+
+// 2. Crear una nueva noticia (Solo logueados)
+app.post('/api/noticias', async (req, res) => {
+    if (!req.session.isAuthenticated) {
+        return res.status(401).json({ success: false, error: 'Inicia sesión para publicar' });
+    }
+
+    const { titulo, contenido, imagen_url } = req.body;
+    const autor_id = req.session.userId;
+
+    try {
+        await db.query(
+            'INSERT INTO noticias (titulo, contenido, imagen_url, autor_id) VALUES ($1, $2, $3, $4)',
+            [titulo, contenido, imagen_url, autor_id]
+        );
+        res.json({ success: true, mensaje: '¡Noticia publicada con éxito!' });
+    } catch (error) {
+        console.error("Error al insertar noticia:", error);
+        res.status(500).json({ success: false, error: 'Error al guardar la noticia' });
+    }
+});
+
+// 3. Eliminar noticia (Ya la tenías, pero asegúrate de que esté así)
+app.delete('/api/noticias/:id', async (req, res) => {
+    if (!req.session.isAuthenticated) return res.status(401).json({ success: false });
+    
+    const { id } = req.params;
+    try {
+        await db.query('DELETE FROM noticias WHERE id = $1', [id]);
+        res.json({ success: true });
+    } catch (err) {
+        res.status(500).json({ success: false });
+    }
+});
+
 app.listen(PORT, () => {
     console.log(`Servidor CATICO en http://localhost:${PORT}`);
 });

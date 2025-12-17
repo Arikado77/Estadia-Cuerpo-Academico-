@@ -184,3 +184,21 @@ body, html {
     color: #004d80;
     margin-top: 15px;
 }
+
+.noticia-item img {
+    max-width: 100%;
+    height: 300px; /* Altura fija para mantener orden */
+    object-fit: cover; /* Recorta la imagen para que llene el espacio sin deformarse */
+    border-radius: 8px;
+    display: block;
+    margin: 0 auto 15px auto;
+}
+
+.noticia-item {
+    position: relative;
+    background: white;
+    border: 1px solid #ddd;
+    padding: 25px;
+    margin-bottom: 20px;
+    border-radius: 12px;
+}

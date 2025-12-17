@@ -1,27 +1,27 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="Noticias.css">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="CA.css">
+    <link rel="stylesheet" href="Noticias.css">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
-    <title>Noticias</title>
+    <title>Noticias - CA-TICO</title>
 </head>
 <body>
 
     <nav>
         <div class="brand">
-            <img src="img/Gemini_Generated_Image_6fk5kt6fk5kt6fk5.png" alt="">
-            <a href="#" class="logo">Cuerpo Académico</a>
+            <img src="img/Gemini_Generated_Image_6fk5kt6fk5kt6fk5.png" alt="Logo">
+            <a href="index.html" class="logo">Cuerpo Académico</a>
         </div>
         <div class="links">
-            <a href="#" onclick="window.location.href='index.html'">Inicio</a>
-            <a href="#que-es" onclick="window.location.href='CA.html'">¿Qué es CA?</a>
-            <a href="#lineas" onclick="window.location.href='Conocimiento.html'">Líneas de Conocimiento</a>
-            <a href="#noticias" onclick="window.location.href='Noticias.html'">Noticias y mas</a>
-            <a href="#Sitios" onclick="window.location.href='Sitios.html'">Proyectos</a>
+            <a href="index.html">Inicio</a>
+            <a href="CA.html">¿Qué es CA?</a>
+            <a href="Conocimiento.html">Líneas de Conocimiento</a>
+            <a href="Noticias.html">Noticias y mas</a>
+            <a href="Sitios.html">Proyectos</a>
         </div>
         <div class="nav-bar">
             <div id="auth-link">
@@ -34,10 +34,7 @@
         <hr>
         <h2>Panel de Administración</h2>
         <div class="admin-controls">
-            <button class="admin-button add-button">Agregar Noticia</button>
-            <button class="admin-button add-button">Agregar Congreso</button>
-            <button class="admin-button add-button">Agregar Foro</button>
-            <button class="admin-button add-button">Agregar Charla</button>
+            <button class="admin-button add-button" onclick="openModal()">➕ Agregar Noticia</button>
         </div>
         <hr>
     </div>
@@ -47,73 +44,121 @@
             
             <section class="social-qr-section">
                 <h2>Síguenos en Redes Sociales</h2>
-                <br>
                 <p>Escanea los códigos QR o da click en la palabra para acceder a nuestras últimas novedades.</p>
                 <div class="qr-grid">
-                    
                     <div class="qr-item">
-                        <img src="img/Facebook-QR.jpg" alt="Código QR de Facebook" class="qr-code">
-                        <a href="https://www.facebook.com/share/17CRf41CNG/?mibextid=wwXIfr" target="_blank" class="qr-link">Facebook</a>
+                        <img src="img/Facebook-QR.jpg" alt="QR Facebook" class="qr-code">
+                        <a href="https://www.facebook.com/share/..." target="_blank" class="qr-link">Facebook</a>
                     </div>
-                    
                     <div class="qr-item">
-                        <img src="img/Instagram-QR.jpg" alt="Código QR de Instagram" class="qr-code">
-                        <a href="https://www.instagram.com/ca_utch?igsh=MXAyMmVmYnRpMzAxbg%3D%3D&utm_source=qr" target="_blank" class="qr-link">Instagram</a>
+                        <img src="img/Instagram-QR.jpg" alt="QR Instagram" class="qr-code">
+                        <a href="https://www.instagram.com/..." target="_blank" class="qr-link">Instagram</a>
                     </div>
                 </div>
             </section>
-            
-            <div id="admin-panel" style="display:none;">
-                <hr>
-                <h2>Panel de Administración</h2>
-                <div class="admin-controls">
-                    <button class="admin-button add-button">➕ Agregar Noticia</button>
-                    <button class="admin-button add-button">➕ Agregar Congreso</button>
-                    </div>
-                <hr>
-            </div>
 
             <section class="noticias-section">
                 <h2>Noticias Recientes desde la Web</h2>
-                
-                <div class="noticia-item">
-                    <div class="edit-buttons" style="display:none;">
-                        <button class="edit-button">✏️</button>
-                        <button class="delete-button">🗑️</button>
-                    </div>
-                    <h3>Título de la Noticia 1</h3>
-                    <p>Descripción corta de la noticia. Aquí puedes poner un resumen del evento o artículo más reciente.</p>
-                    <a href="#" class="read-more">Leer más</a>
+                <div id="contenedor-noticias">
+                    <p style="text-align:center;">Cargando noticias...</p>
                 </div>
-
-                <div class="noticia-item">
-                    <div class="edit-buttons" style="display:none;">
-                        <button class="edit-button">✏️</button>
-                        <button class="delete-button">🗑️</button>
-                    </div>
-                    <h3>Publicación de Investigación: 'Avances en Ciberseguridad Cuántica'</h3>
-                    <p>El Cuerpo Académico ha publicado un nuevo artículo en la revista internacional "Journal of Tech Security" detallando sus hallazgos sobre criptografía post-cuántica.</p>
-                    <a href="#" class="read-more">Ver Publicación</a>
-                </div>
-
-                <div class="noticia-item">
-                    <div class="edit-buttons" style="display:none;">
-                        <button class="edit-button">✏️</button>
-                        <button class="delete-button">🗑️</button>
-                    </div>
-                    <h3>Invitación: Participación en el Congreso Nacional de TI (CNTI 2025)</h3>
-                    <p>Nuestros miembros presentarán 3 ponencias sobre análisis forense y protección de datos en la próxima edición del congreso CNTI que se celebrará en la Ciudad de México en noviembre.</p>
-                    <a href="#" class="read-more">Ver Agenda</a>
-                </div>
-                
             </section>
-
-            </div>
+        </div>
     </main>
 
-    <script src="Script.js"></script>
+    <div id="modal-noticia" class="modal" style="display:none;">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h3>Nueva Noticia</h3>
+            <form id="form-noticia">
+                <input type="text" id="noticia-titulo" placeholder="Título de la noticia" required>
+                <textarea id="noticia-contenido" placeholder="Descripción de la noticia" rows="5" required></textarea>
+                <input type="text" id="noticia-imagen" placeholder="URL de la imagen (ej: https://.../foto.jpg)">
+                <button type="submit" class="admin-button">Publicar Noticia</button>
+            </form>
+        </div>
+    </div>
+
     <script src="VerBotonPerfil.js"></script>
     <script src="server.js"></script>
-    
+    <script>
+        // --- FUNCIONES DEL MODAL ---
+        function openModal() { document.getElementById('modal-noticia').style.display = 'block'; }
+        function closeModal() { document.getElementById('modal-noticia').style.display = 'none'; }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const contenedor = document.getElementById('contenedor-noticias');
+            const adminPanel = document.getElementById('admin-panel');
+
+            // 1. Verificar si el usuario es Admin para mostrar el panel
+            const resUser = await fetch('/api/usuario/perfil');
+            const userData = await resUser.json();
+            const isAdmin = userData.success; // Si está logueado, es admin para este caso
+
+            if (isAdmin) adminPanel.style.display = 'block';
+
+            // 2. Cargar Noticias desde la Base de Datos
+            async function cargarNoticias() {
+                const res = await fetch('/api/noticias');
+                const data = await res.json();
+                
+                if (data.success) {
+                    contenedor.innerHTML = '';
+                    data.noticias.forEach(n => {
+                        const div = document.createElement('div');
+                        div.className = 'noticia-item';
+                        div.innerHTML = `
+                            ${isAdmin ? `<div class="edit-buttons"><button class="delete-button" onclick="eliminarNoticia(${n.id})">🗑️</button></div>` : ''}
+                            ${n.imagen_url ? `<img src="${n.imagen_url}" style="width:100%; border-radius:8px; margin-bottom:15px;">` : ''}
+                            <h3>${n.titulo}</h3>
+                            <p>${n.contenido}</p>
+                            <span class="news-date">${new Date(n.fecha_creacion).toLocaleDateString()}</span>
+                        `;
+                        contenedor.appendChild(div);
+                    });
+                }
+            }
+
+            cargarNoticias();
+
+            // 3. Manejo del Formulario
+            document.getElementById('form-noticia').onsubmit = async (e) => {
+                e.preventDefault();
+                const body = {
+                    titulo: document.getElementById('noticia-titulo').value,
+                    contenido: document.getElementById('noticia-contenido').value,
+                    imagen_url: document.getElementById('noticia-imagen').value
+                };
+
+                const res = await fetch('/api/noticias', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(body)
+                });
+
+                if (res.ok) {
+                    alert("Noticia publicada!");
+                    closeModal();
+                    location.reload();
+                }
+            };
+        });
+
+        async function eliminarNoticia(id) {
+            if(confirm("¿Seguro que quieres borrar esta noticia?")) {
+                await fetch(`/api/noticias/${id}`, { method: 'DELETE' });
+                location.reload();
+            }
+        }
+    </script>
+
+    <style>
+        /* Estilos rápidos para el modal */
+        .modal { position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); }
+        .modal-content { background: white; margin: 10% auto; padding: 30px; border-radius: 10px; width: 50%; position: relative; }
+        .modal-content input, .modal-content textarea { width: 100%; margin-bottom: 15px; padding: 10px; border: 1px solid #ccc; border-radius: 5px; }
+        .close { position: absolute; top: 10px; right: 20px; font-size: 30px; cursor: pointer; }
+        .news-date { font-size: 0.8em; color: #888; }
+    </style>
 </body>
 </html>
