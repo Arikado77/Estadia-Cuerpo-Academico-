@@ -217,6 +217,41 @@ app.post('/api/logout', (req, res) => {
     });
 });
 
+// --- CONFIRMAR NUEVA CONTRASEÑA (RESET FINAL) ---
+app.post('/api/auth/reset-confirm', async (req, res) => {
+    const { token, nuevaPassword } = req.body;
+
+    try {
+        // 1. Buscar si el token es válido y no ha expirado
+        const queryToken = `
+            SELECT id FROM usuarios 
+            WHERE reset_token = $1 AND reset_expires > NOW()
+        `;
+        const userRes = await db.query(queryToken, [token]);
+
+        if (userRes.rows.length === 0) {
+            return res.status(400).json({ success: false, error: 'El enlace ha expirado o es inválido.' });
+        }
+
+        const userId = userRes.rows[0].id;
+
+        // 2. Hashear la nueva contraseña
+        const nuevoHash = await bcrypt.hash(nuevaPassword, 10);
+
+        // 3. Actualizar y limpiar el token para que no se use dos veces
+        await db.query(`
+            UPDATE usuarios 
+            SET contrasena_hash = $1, reset_token = NULL, reset_expires = NULL 
+            WHERE id = $2
+        `, [nuevoHash, userId]);
+
+        res.json({ success: true, mensaje: 'Contraseña actualizada con éxito.' });
+    } catch (error) {
+        console.error("Error en reset-confirm:", error);
+        res.status(500).json({ success: false, error: 'Error interno del servidor.' });
+    }
+});
+
 app.listen(PORT, () => {
     console.log(`Servidor CATICO en http://localhost:${PORT}`);
 });
