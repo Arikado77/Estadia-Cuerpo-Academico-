@@ -175,3 +175,47 @@ h2::after {
     margin: 5px 0;
     font-size: 14px;
 }
+
+
+/* --- Detalles que se abren (La información oculta) --- */
+.member-details {
+    display: none; /* Importante: que empiece oculto */
+    text-align: left;
+    padding: 15px;
+    margin-top: 15px;
+    border-top: 1px solid #eee;
+    background-color: #f9f9f9;
+    border-radius: 0 0 8px 8px;
+    animation: slideDown 0.4s ease forwards;
+}
+
+.member-details h4 {
+    font-size: 16px;
+    color: #1a2a4d;
+    margin-bottom: 10px;
+}
+
+.member-details p {
+    font-size: 14px;
+    margin: 8px 0;
+    color: #555;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.member-details a {
+    color: #007bff;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.member-details a:hover {
+    text-decoration: underline;
+}
+
+/* Animación para que baje suave */
+@keyframes slideDown {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
