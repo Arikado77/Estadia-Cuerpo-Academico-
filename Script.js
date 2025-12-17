@@ -35,36 +35,3 @@ function openTab(evt, tabId) {
     document.getElementById(tabId).style.display = "block";
     evt.currentTarget.className += " active";
 }
-
-// === 4. LÓGICA DE PERFILES DE MIEMBROS (LA QUE FALTABA) ===
-document.addEventListener('DOMContentLoaded', () => {
-    // Buscamos todos los enlaces de nombres en las tarjetas
-    const memberLinks = document.querySelectorAll('.member-name-link');
-
-    memberLinks.forEach(link => {
-        link.addEventListener('click', (e) => {
-            e.preventDefault(); // Evita que el <a> haga scroll arriba
-            
-            // Buscamos el div de detalles que está justo después del link (o dentro del padre)
-            const card = link.closest('.member-card');
-            const details = card.querySelector('.member-details');
-
-            if (details) {
-                // Verificamos si ya está abierto
-                const isVisible = details.style.display === 'block';
-
-                // OPCIONAL: Cerrar otros detalles antes de abrir este
-                document.querySelectorAll('.member-details').forEach(d => {
-                    d.style.display = 'none';
-                });
-
-                // Si estaba oculto, lo mostramos
-                if (!isVisible) {
-                    details.style.display = 'block';
-                } else {
-                    details.style.display = 'none';
-                }
-            }
-        });
-    });
-});
