@@ -1,19 +1,33 @@
 // server.js
 const express = require('express');
 const path = require('path');
-const fs = require('fs'); // <-- AGREGADO para manejar carpetas
+const fs = require('fs');
 const session = require('express-session');
-const multer = require('multer'); // <-- Movido arriba por orden
+const multer = require('multer');
+const bcrypt = require('bcrypt');
+const crypto = require('crypto'); // Para tokens de recuperación
+const nodemailer = require('nodemailer'); // Para envío de correos
+
 const app = express();
 const PORT = 3000;
 
-// Importar lógica
+// Importar lógica de autenticación y DB
 const { registrarUsuario, loginUsuario } = require('./auth.controller'); 
 const db = require('./db.config');
-const bcrypt = require('bcrypt');
 
 // ===============================================
-// VALIDACIÓN DE CARPETA UPLOADS (SOLUCIONA EL ERROR 502)
+// CONFIGURACIÓN DE NODEMAILER (Para recuperación)
+// ===============================================
+const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: 'tu_correo@gmail.com', // Reemplazar con tu correo
+        pass: 'xxxx xxxx xxxx xxxx'  // Reemplazar con tu contraseña de aplicación
+    }
+});
+
+// ===============================================
+// VALIDACIÓN DE CARPETA UPLOADS
 // ===============================================
 const uploadDir = path.join(__dirname, 'public', 'uploads');
 if (!fs.existsSync(uploadDir)){
@@ -28,26 +42,23 @@ const storage = multer.diskStorage({
         cb(null, 'public/uploads/');
     },
     filename: (req, file, cb) => {
-        // Usamos el ID de la sesión para nombrar el archivo de forma única
         cb(null, 'perfil-' + req.session.userId + path.extname(file.originalname));
     }
 });
 const upload = multer({ storage: storage });
 
 // ===============================================
-// MIDDLEWARES
+// MIDDLEWARES (Orden Crítico)
 // ===============================================
 app.use(session({
     secret: 'CLAVE_SECRETA_CATICO_2025', 
     resave: false,
     saveUninitialized: false,
-    cookie: { secure: false } // Cambiar a true solo si ya tienes HTTPS activo
+    cookie: { secure: false } 
 }));
 
 app.use(express.json()); 
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static(__dirname)); 
-app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 
 // Función de protección de rutas
 function verificarAutenticacion(req, res, next) {
@@ -55,14 +66,20 @@ function verificarAutenticacion(req, res, next) {
         next();
     } else {
         req.session.originalUrl = req.originalUrl;
-        res.redirect('/login'); 
+        res.redirect('/login.html'); 
     }
 }
 
 // ===============================================
-// RUTAS
+// RUTAS DE PÁGINAS (PROTEGIDAS Y PÚBLICAS)
 // ===============================================
 
+// 1. Rutas que requieren protección (DEBEN IR ANTES QUE EL STATIC)
+app.get('/Noticias.html', verificarAutenticacion, (req, res) => {
+    res.sendFile(path.join(__dirname, 'Noticias.html'));
+});
+
+// 2. Rutas públicas específicas
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
 });
@@ -72,66 +89,15 @@ app.get('/login', (req, res) => {
     res.sendFile(path.join(__dirname, 'login.html'));
 });
 
-app.get('/Noticias.html', verificarAutenticacion, (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'Noticias.html'));
-});
+// 3. Servir archivos estáticos (CSS, JS, Imágenes)
+app.use(express.static(__dirname)); 
+app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 
-// --- API PERFIL ---
-app.get('/api/usuario/perfil', async (req, res) => {
-    const userId = req.session.userId; 
-    if (!userId) return res.status(401).json({ success: false, error: 'No autorizado' });
+// ===============================================
+// API - GESTIÓN DE USUARIOS
+// ===============================================
 
-    try {
-        const queryText = 'SELECT nombre, email, universidad, ciudad_estado, linea_investigacion, perfil_google_url, orcid_id, foto_url FROM usuarios WHERE id = $1';
-        const result = await db.query(queryText, [userId]);
-        if (result.rows.length > 0) {
-            res.json({ success: true, user: result.rows[0] });
-        } else {
-            res.status(404).json({ success: false, error: 'Usuario no encontrado' });
-        }
-    } catch (error) {
-        res.status(500).json({ success: false, error: 'Error de servidor' });
-    }
-});
-
-// --- API ACTUALIZAR DATOS ---
-app.post('/api/usuario/actualizar', async (req, res) => {
-    const userId = req.session.userId;
-    const { nombre, universidad, ciudad_estado, linea_investigacion, perfil_google_url, orcid_id } = req.body;
-    if (!userId) return res.status(401).json({ success: false });
-
-    try {
-        const queryText = `UPDATE usuarios SET nombre = $1, universidad = $2, ciudad_estado = $3, linea_investigacion = $4, perfil_google_url = $5, orcid_id = $6 WHERE id = $7`;
-        await db.query(queryText, [nombre, universidad, ciudad_estado, linea_investigacion, perfil_google_url, orcid_id, userId]);
-        res.json({ success: true, mensaje: '¡Perfil actualizado!' });
-    } catch (error) {
-        res.status(500).json({ success: false });
-    }
-});
-
-// --- API FOTO ---
-app.post('/api/usuario/foto', upload.single('foto'), async (req, res) => {
-    // Verificamos que haya archivo y sesión
-    if (!req.file || !req.session.userId) {
-        return res.status(400).json({ success: false, error: 'No hay archivo o sesión' });
-    }
-
-    // CORRECCIÓN: La URL para el navegador no debe llevar "/public"
-    const urlFoto = '/uploads/' + req.file.filename; 
-    
-    try {
-        // Guardamos la URL en la base de datos
-        await db.query('UPDATE usuarios SET foto_url = $1 WHERE id = $2', [urlFoto, req.session.userId]);
-        
-        // Devolvemos éxito y la URL correcta al frontend
-        res.json({ success: true, url: urlFoto });
-    } catch (error) {
-        console.error("Error en DB al actualizar foto:", error);
-        res.status(500).json({ success: false, error: 'Error interno del servidor' });
-    }
-});
-
-// --- API LOGIN / LOGOUT ---
+// Login
 app.post('/api/login', async (req, res) => {
     const { email, contrasena } = req.body;
     const resultado = await loginUsuario(email, contrasena);
@@ -140,70 +106,110 @@ app.post('/api/login', async (req, res) => {
         req.session.userId = resultado.userId; 
         req.session.isAuthenticated = true; 
         
-        // Si existe una URL guardada (como /noticias), la usamos. Si no, va al inicio /.
-        const redirectUrl = req.session.originalUrl || '/';
-        delete req.session.originalUrl; // Limpiamos para la próxima vez
+        const redirectUrl = req.session.originalUrl || '/index.html';
+        delete req.session.originalUrl;
 
         return res.status(200).json({ 
             success: true,
-            mensaje: 'Inicio exitoso',
-            redirect: redirectUrl // <-- Le enviamos la ruta al JS del cliente
+            redirect: redirectUrl 
         });
     } else {
         return res.status(401).json({ error: 'Credenciales inválidas' });
     }
 });
 
-app.get('/api/status', async (req, res) => {
-    if (req.session.isAuthenticated) {
-        try {
-            // Buscamos el nombre del usuario en la DB
-            const result = await db.query('SELECT nombre FROM usuarios WHERE id = $1', [req.session.userId]);
-            const nombreUsuario = result.rows[0].nombre;
-
-            return res.json({ 
-                isAuthenticated: true, 
-                nombre: nombreUsuario // <-- Enviamos el nombre real
-            });
-        } catch (error) {
-            return res.json({ isAuthenticated: true, nombre: 'Usuario' });
-        }
+// Registro
+app.post('/api/registro', async (req, res) => {
+    const resultado = await registrarUsuario(req.body);
+    if (resultado.success) {
+        res.status(201).json({ success: true });
+    } else {
+        res.status(400).json({ error: resultado.error });
     }
-    res.json({ isAuthenticated: false });
 });
 
+// Perfil (Consulta)
+app.get('/api/usuario/perfil', async (req, res) => {
+    const userId = req.session.userId; 
+    if (!userId) return res.status(401).json({ success: false, error: 'No autorizado' });
+
+    try {
+        const result = await db.query('SELECT nombre, email, universidad, ciudad_estado, linea_investigacion, perfil_google_url, orcid_id, foto_url FROM usuarios WHERE id = $1', [userId]);
+        res.json({ success: true, user: result.rows[0] });
+    } catch (error) {
+        res.status(500).json({ success: false });
+    }
+});
+
+// Actualizar Datos
+app.post('/api/usuario/actualizar', async (req, res) => {
+    const userId = req.session.userId;
+    const { nombre, universidad, ciudad_estado, linea_investigacion, perfil_google_url, orcid_id } = req.body;
+    if (!userId) return res.status(401).json({ success: false });
+
+    try {
+        await db.query(`UPDATE usuarios SET nombre = $1, universidad = $2, ciudad_estado = $3, linea_investigacion = $4, perfil_google_url = $5, orcid_id = $6 WHERE id = $7`, 
+            [nombre, universidad, ciudad_estado, linea_investigacion, perfil_google_url, orcid_id, userId]);
+        res.json({ success: true, mensaje: '¡Perfil actualizado!' });
+    } catch (error) {
+        res.status(500).json({ success: false });
+    }
+});
+
+// Foto de Perfil
+app.post('/api/usuario/foto', upload.single('foto'), async (req, res) => {
+    if (!req.file || !req.session.userId) return res.status(400).json({ success: false });
+    const urlFoto = '/uploads/' + req.file.filename; 
+    try {
+        await db.query('UPDATE usuarios SET foto_url = $1 WHERE id = $2', [urlFoto, req.session.userId]);
+        res.json({ success: true, url: urlFoto });
+    } catch (error) {
+        res.status(500).json({ success: false });
+    }
+});
+
+// Cambiar Contraseña
 app.post('/api/usuario/cambiar-contrasena', async (req, res) => {
     const { passwordActual, passwordNueva } = req.body;
     const userId = req.session.userId;
-
-    if (!userId) return res.status(401).json({ success: false, error: 'Sesión expirada' });
+    if (!userId) return res.status(401).json({ success: false });
 
     try {
-        // 1. Obtener el hash actual
         const userRes = await db.query('SELECT contrasena_hash FROM usuarios WHERE id = $1', [userId]);
-        
-        if (userRes.rows.length === 0) {
-            return res.status(404).json({ success: false, error: 'Usuario no encontrado' });
-        }
-
-        // 2. Comparar con bcrypt
         const match = await bcrypt.compare(passwordActual, userRes.rows[0].contrasena_hash);
+        if (!match) return res.json({ success: false, error: 'Contraseña actual incorrecta.' });
 
-        if (!match) {
-            return res.json({ success: false, error: 'La contraseña actual es incorrecta.' });
-        }
-
-        // 3. Hashear la nueva y guardar
         const nuevoHash = await bcrypt.hash(passwordNueva, 10);
         await db.query('UPDATE usuarios SET contrasena_hash = $1 WHERE id = $2', [nuevoHash, userId]);
-
-        res.json({ success: true, mensaje: 'Contraseña actualizada correctamente.' });
+        res.json({ success: true, mensaje: 'Contraseña actualizada.' });
     } catch (error) {
-        console.error("Error al cambiar pass:", error);
-        res.status(500).json({ success: false, error: 'Error interno del servidor' });
+        res.status(500).json({ success: false });
     }
 });
 
+// Recuperación de Contraseña (Token)
+app.post('/api/auth/olvide-password', async (req, res) => {
+    const { email } = req.body;
+    try {
+        const token = crypto.randomBytes(20).toString('hex');
+        const expires = new Date(Date.now() + 3600000); 
+        const user = await db.query('UPDATE usuarios SET reset_token = $1, reset_expires = $2 WHERE email = $3 RETURNING id', [token, expires, email]);
+        
+        if (user.rows.length > 0) {
+            const resetUrl = `http://${req.get('host')}/restablecer.html?token=${token}`;
+            await transporter.sendMail({
+                to: email,
+                subject: 'Recuperar Contraseña - CATICO',
+                html: `<p>Haz clic para restablecer: <a href="${resetUrl}">${resetUrl}</a></p>`
+            });
+        }
+        res.json({ success: true, mensaje: 'Si el correo existe, recibirás instrucciones.' });
+    } catch (error) {
+        res.status(500).json({ success: false });
+    }
+});
+
+// Logout
 app.post('/api/logout', (req, res) => {
     req.session.destroy(() => {
         res.clearCookie('connect.sid');
