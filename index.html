@@ -201,31 +201,28 @@
             });
 
             document.addEventListener('DOMContentLoaded', () => {
-                // Buscamos todos los enlaces de nombres en las tarjetas
                 const memberLinks = document.querySelectorAll('.member-name-link');
 
                 memberLinks.forEach(link => {
                     link.addEventListener('click', (e) => {
-                        e.preventDefault(); // Evita que el <a> haga scroll arriba
+                        e.preventDefault();
                         
-                        // Buscamos el div de detalles que está justo después del link (o dentro del padre)
                         const card = link.closest('.member-card');
                         const details = card.querySelector('.member-details');
 
                         if (details) {
-                            // Verificamos si ya está abierto
-                            const isVisible = details.style.display === 'block';
+                            // Leemos el estilo real que tiene en ese momento
+                            const isVisible = window.getComputedStyle(details).display === 'block';
 
-                            // OPCIONAL: Cerrar otros detalles antes de abrir este
+                            // Cerramos todos primero para que solo uno esté abierto
                             document.querySelectorAll('.member-details').forEach(d => {
                                 d.style.display = 'none';
                             });
 
-                            // Si estaba oculto, lo mostramos
+                            // Si no se veía, lo mostramos
                             if (!isVisible) {
                                 details.style.display = 'block';
-                            } else {
-                                details.style.display = 'none';
+                                console.log("Mostrando detalles de:", link.innerText);
                             }
                         }
                     });

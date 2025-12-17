@@ -146,3 +146,10 @@ h2::after {
     height: auto;
     margin: 0 auto;
 }
+
+.member-details {
+    display: none; /* Por defecto oculto */
+    padding: 15px;
+    background-color: #fdfdfd;
+    border-top: 1px solid #eee;
+}
