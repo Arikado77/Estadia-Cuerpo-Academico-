@@ -19,10 +19,31 @@
                 <div class="profile-card profile-info-card">
                     <h2><i class='bx bxs-user-circle'></i> Miembro del CA</h2>
                     
-                    <div class="profile-photo-area">
-                        <img src="https://via.placeholder.com/150" alt="Foto de Perfil" class="profile-photo" id="display-photo">
-                        <button class="upload-btn">Cambiar Foto</button>
+                    <div class="avatar-selection">
+                        <h3>Selecciona tu Avatar</h3>
+                        <div class="avatar-grid" id="avatar-grid">
+                            </div>
+                        <button id="save-avatar-btn" class="btn-primary">Confirmar Avatar</button>
                     </div>
+
+                    <style>
+                        .avatar-grid {
+                            display: grid;
+                            grid-template-columns: repeat(5, 1fr);
+                            gap: 10px;
+                            margin: 20px 0;
+                        }
+                        .avatar-item {
+                            width: 60px;
+                            height: 60px;
+                            cursor: pointer;
+                            border: 3px solid transparent;
+                            border-radius: 50%;
+                            transition: 0.3s;
+                        }
+                        .avatar-item:hover { transform: scale(1.1); }
+                        .avatar-item.selected { border-color: #007bff; background: #e7f1ff; }
+                    </style>
 
                     <div class="basic-info-display">
                         <p><strong>Usuario:</strong> <span id="user-name-display">Cargando...</span></p>

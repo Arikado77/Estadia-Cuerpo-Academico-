@@ -314,6 +314,19 @@ app.post('/api/auth/cambio-directo', async (req, res) => {
     }
 });
 
+app.post('/api/usuario/actualizar-avatar', async (req, res) => {
+    if (!req.session.userId) return res.status(401).json({ success: false });
+
+    const { avatarUrl } = req.body;
+
+    try {
+        await db.query('UPDATE usuarios SET foto_url = $1 WHERE id = $2', [avatarUrl, req.session.userId]);
+        res.json({ success: true });
+    } catch (error) {
+        res.status(500).json({ success: false });
+    }
+});
+
 app.listen(PORT, () => {
     console.log(`Servidor CATICO en http://localhost:${PORT}`);
 });

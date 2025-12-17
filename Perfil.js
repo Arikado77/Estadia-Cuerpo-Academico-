@@ -181,3 +181,40 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 });
+
+document.addEventListener('DOMContentLoaded', () => {
+    const grid = document.getElementById('avatar-grid');
+    let selectedAvatar = '';
+
+    // 1. Crear los 10 monitos
+    for (let i = 1; i <= 10; i++) {
+        const img = document.createElement('img');
+        img.src = `img/avatars/${i}.png`;
+        img.className = 'avatar-item';
+        img.onclick = () => {
+            // Quitar selección a otros
+            document.querySelectorAll('.avatar-item').forEach(el => el.classList.remove('selected'));
+            // Seleccionar este
+            img.classList.add('selected');
+            selectedAvatar = img.src; // Guardamos la ruta
+        };
+        grid.appendChild(img);
+    }
+
+    // 2. Botón de guardar
+    document.getElementById('save-avatar-btn').onclick = async () => {
+        if (!selectedAvatar) return alert("Selecciona un monito primero");
+
+        const res = await fetch('/api/usuario/actualizar-avatar', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ avatarUrl: selectedAvatar })
+        });
+
+        const data = await res.json();
+        if (data.success) {
+            alert("✅ Avatar actualizado");
+            document.getElementById('profile-img-large').src = selectedAvatar;
+        }
+    };
+});
