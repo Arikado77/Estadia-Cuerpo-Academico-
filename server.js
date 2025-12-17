@@ -135,14 +135,22 @@ app.post('/api/usuario/foto', upload.single('foto'), async (req, res) => {
 app.post('/api/login', async (req, res) => {
     const { email, contrasena } = req.body;
     const resultado = await loginUsuario(email, contrasena);
+
     if (resultado.success) {
         req.session.userId = resultado.userId; 
         req.session.isAuthenticated = true; 
+        
+        // Si existe una URL guardada (como /noticias), la usamos. Si no, va al inicio /.
         const redirectUrl = req.session.originalUrl || '/';
-        delete req.session.originalUrl;
-        res.status(200).json({ mensaje: 'Éxito', redirect: redirectUrl });
+        delete req.session.originalUrl; // Limpiamos para la próxima vez
+
+        return res.status(200).json({ 
+            success: true,
+            mensaje: 'Inicio exitoso',
+            redirect: redirectUrl // <-- Le enviamos la ruta al JS del cliente
+        });
     } else {
-        res.status(401).json({ error: resultado.error });
+        return res.status(401).json({ error: 'Credenciales inválidas' });
     }
 });
 
