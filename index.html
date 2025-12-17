@@ -211,18 +211,18 @@
                         const details = card.querySelector('.member-details');
 
                         if (details) {
-                            // Leemos el estilo real que tiene en ese momento
-                            const isVisible = window.getComputedStyle(details).display === 'block';
+                            // Comprobamos si está oculto actualmente
+                            const isHidden = window.getComputedStyle(details).display === 'none';
 
-                            // Cerramos todos primero para que solo uno esté abierto
+                            // Cerramos todos los demás para que no se amontonen
                             document.querySelectorAll('.member-details').forEach(d => {
-                                d.style.display = 'none';
+                                d.style.setProperty('display', 'none', 'important');
                             });
 
-                            // Si no se veía, lo mostramos
-                            if (!isVisible) {
-                                details.style.display = 'block';
-                                console.log("Mostrando detalles de:", link.innerText);
+                            // Si estaba oculto, lo mostramos con 'important' para vencer al CSS
+                            if (isHidden) {
+                                details.style.setProperty('display', 'block', 'important');
+                                console.log("Abriendo detalles de:", link.innerText);
                             }
                         }
                     });
