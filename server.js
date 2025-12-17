@@ -19,10 +19,12 @@ const db = require('./db.config');
 // CONFIGURACIÓN DE NODEMAILER (Para recuperación)
 // ===============================================
 const transporter = nodemailer.createTransport({
-    service: 'gmail',
+    host: 'smtp.gmail.com',
+    port: 465,
+    secure: true, // Use SSL
     auth: {
         user: 'utch.tico@gmail.com', // Reemplazar con tu correo
-        pass: 'feix hvus mbqi idtv'  // Reemplazar con tu contraseña de aplicación
+        pass: 'feixhvusmbqiidtv'  // Reemplazar con tu contraseña de aplicación
     }
 });
 
