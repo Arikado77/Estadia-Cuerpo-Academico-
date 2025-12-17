@@ -21,8 +21,8 @@ const db = require('./db.config');
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-        user: 'tu_correo@gmail.com', // Reemplazar con tu correo
-        pass: 'xxxx xxxx xxxx xxxx'  // Reemplazar con tu contraseña de aplicación
+        user: 'utch.tico@gmail.com', // Reemplazar con tu correo
+        pass: 'feix hvus mbqi idtv'  // Reemplazar con tu contraseña de aplicación
     }
 });
 
