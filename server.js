@@ -72,8 +72,8 @@ app.get('/login', (req, res) => {
     res.sendFile(path.join(__dirname, 'login.html'));
 });
 
-app.get('/noticias', verificarAutenticacion, (req, res) => {
-    res.sendFile(path.join(__dirname, 'Noticias.html'));
+app.get('/Noticias.html', verificarAutenticacion, (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'Noticias.html'));
 });
 
 // --- API PERFIL ---
