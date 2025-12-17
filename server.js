@@ -192,22 +192,57 @@ app.post('/api/usuario/cambiar-contrasena', async (req, res) => {
 // Recuperación de Contraseña (Token)
 app.post('/api/auth/olvide-password', async (req, res) => {
     const { email } = req.body;
+    
     try {
+        // 1. Verificar si el usuario existe y generar token
         const token = crypto.randomBytes(20).toString('hex');
-        const expires = new Date(Date.now() + 3600000); 
-        const user = await db.query('UPDATE usuarios SET reset_token = $1, reset_expires = $2 WHERE email = $3 RETURNING id', [token, expires, email]);
+        const expires = new Date(Date.now() + 3600000); // 1 hora de validez
         
+        const user = await db.query(
+            'UPDATE usuarios SET reset_token = $1, reset_expires = $2 WHERE email = $3 RETURNING id, nombre', 
+            [token, expires, email]
+        );
+
+        // 2. Responder de inmediato al cliente para evitar el Error 504
+        // No confirmamos si el correo existe por seguridad, pero liberamos la conexión.
+        res.json({ 
+            success: true, 
+            mensaje: 'Si el correo está registrado, recibirás un enlace de recuperación en unos minutos.' 
+        });
+
+        // 3. Si el usuario existe, intentar enviar el correo en segundo plano
         if (user.rows.length > 0) {
+            const nombreUsuario = user.rows[0].nombre;
             const resetUrl = `http://${req.get('host')}/restablecer.html?token=${token}`;
-            await transporter.sendMail({
+
+            // No usamos 'await' aquí para que no bloquee la respuesta anterior
+            transporter.sendMail({
                 to: email,
                 subject: 'Recuperar Contraseña - CATICO',
-                html: `<p>Haz clic para restablecer: <a href="${resetUrl}">${resetUrl}</a></p>`
+                html: `
+                    <div style="font-family: sans-serif; border: 1px solid #eee; padding: 20px; border-radius: 10px;">
+                        <h2 style="color: #1a2a4d;">Hola, ${nombreUsuario}</h2>
+                        <p>Recibimos una solicitud para restablecer la contraseña de tu cuenta en el portal <strong>CATICO</strong>.</p>
+                        <p>Haz clic en el botón de abajo para elegir una nueva contraseña:</p>
+                        <div style="text-align: center; margin: 30px 0;">
+                            <a href="${resetUrl}" style="background-color: #007bff; color: white; padding: 12px 25px; text-decoration: none; border-radius: 5px; font-weight: bold;">Restablecer Contraseña</a>
+                        </div>
+                        <p style="font-size: 0.8em; color: #777;">Este enlace expirará en 1 hora. Si no solicitaste este cambio, puedes ignorar este correo.</p>
+                    </div>
+                `
+            }).then(() => {
+                console.log(`✅ Correo enviado con éxito a: ${email}`);
+            }).catch(err => {
+                console.error("❌ Error al enviar correo con Nodemailer:", err);
             });
         }
-        res.json({ success: true, mensaje: 'Si el correo existe, recibirás instrucciones.' });
+
     } catch (error) {
-        res.status(500).json({ success: false });
+        console.error("❌ Error en la ruta de olvido-password:", error);
+        // Solo enviamos error 500 si la base de datos falla antes de la respuesta
+        if (!res.headersSent) {
+            res.status(500).json({ success: false, error: 'Error interno del servidor.' });
+        }
     }
 });
 
