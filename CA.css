@@ -161,3 +161,20 @@ h2::after {
 .member-card:hover {
     transform: translateY(-5px);
 }
+
+/* --- Estilos del Organigrama --- */
+.Organigrama {
+    width: 35%;          /* Tamaño al 35% del contenedor */
+    height: auto;        /* Mantiene la proporción */
+    display: block;      /* Permite usar márgenes automáticos */
+    margin: 20px auto;   /* Centra horizontalmente y da espacio arriba/abajo */
+    border-radius: 8px;  /* Opcional: bordes redondeados para que se vea mejor */
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1); /* Opcional: sombra ligera */
+}
+
+/* Ajuste para celulares: Que no se vea tan chiquito en pantallas móviles */
+@media (max-width: 768px) {
+    .Organigrama {
+        width: 80%;      /* En celulares sube al 80% para que sea legible */
+    }
+}
