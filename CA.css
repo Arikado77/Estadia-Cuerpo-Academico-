@@ -132,32 +132,32 @@ h2::after {
 }
 
 
-/* --- Estilos para los detalles (Acordeón) --- */
+/* Asegúrate de que estas clases estén en tu CA.css */
 .member-details {
-    max-height: 0; /* Empieza con altura 0 */
-    overflow: hidden; /* Oculta el contenido */
+    max-height: 0;
+    overflow: hidden;
     opacity: 0;
-    transition: all 0.5s ease-in-out; /* Animación suave */
+    transition: max-height 0.5s ease-out, opacity 0.3s ease;
     text-align: left;
-    padding: 0 15px; /* Padding lateral solamente al inicio */
 }
 
-/* Clase que aplicará el JS para abrir */
 .member-details.active {
-    max-height: 500px; /* Altura suficiente para el contenido */
+    max-height: 600px; /* Altura suficiente para que salga toda la info */
     opacity: 1;
-    padding: 15px; /* Padding completo al abrir */
-    border-top: 1px solid #eee;
-    margin-top: 10px;
-}
-
-.member-name-link {
-    cursor: pointer;
-    text-decoration: none;
-    color: inherit;
-    display: block;
+    border-top: 1px solid #ddd;
+    margin-top: 15px;
+    padding-top: 10px;
 }
 
 .member-card {
-    cursor: pointer; /* Indica que se puede hacer clic en toda la tarjeta */
+    cursor: pointer;
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    transition: transform 0.2s;
+}
+
+.member-card:hover {
+    transform: translateY(-5px);
 }
