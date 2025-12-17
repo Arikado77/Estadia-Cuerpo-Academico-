@@ -131,91 +131,33 @@ h2::after {
     margin-top: 0;
 }
 
-/* --- Pie de Página --- */
-.site-footer {
-    background-color: var(--primary-color);
-    color: white;
-    text-align: center;
-    padding: 20px 0;
-    font-size: 0.9em;
-}
 
-.Organigrama {
-    display: block;
-    max-width: 50%;
-    height: auto;
-    margin: 0 auto;
-}
-
+/* --- Estilos para los detalles (Acordeón) --- */
 .member-details {
-    display: none; /* Por defecto oculto */
-    padding: 15px;
-    background-color: #fdfdfd;
-    border-top: 1px solid #eee;
-}
-
-.member-details {
-    display: none; /* Se controla con JS */
-    width: 100%;
-    background-color: #ffffff !important; /* Fondo blanco para que se vea el texto */
-    padding: 20px !important;
-    border-top: 2px solid #1a2a4d;
-    color: #333 !important; /* Texto oscuro */
+    max-height: 0; /* Empieza con altura 0 */
+    overflow: hidden; /* Oculta el contenido */
+    opacity: 0;
+    transition: all 0.5s ease-in-out; /* Animación suave */
     text-align: left;
-    visibility: visible !important;
-    opacity: 1 !important;
+    padding: 0 15px; /* Padding lateral solamente al inicio */
 }
 
-.member-details h4 {
-    color: #1a2a4d;
-    margin-bottom: 10px;
-}
-
-.member-details p {
-    margin: 5px 0;
-    font-size: 14px;
-}
-
-
-/* --- Detalles que se abren (La información oculta) --- */
-.member-details {
-    display: none; /* Importante: que empiece oculto */
-    text-align: left;
-    padding: 15px;
-    margin-top: 15px;
+/* Clase que aplicará el JS para abrir */
+.member-details.active {
+    max-height: 500px; /* Altura suficiente para el contenido */
+    opacity: 1;
+    padding: 15px; /* Padding completo al abrir */
     border-top: 1px solid #eee;
-    background-color: #f9f9f9;
-    border-radius: 0 0 8px 8px;
-    animation: slideDown 0.4s ease forwards;
+    margin-top: 10px;
 }
 
-.member-details h4 {
-    font-size: 16px;
-    color: #1a2a4d;
-    margin-bottom: 10px;
-}
-
-.member-details p {
-    font-size: 14px;
-    margin: 8px 0;
-    color: #555;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.member-details a {
-    color: #007bff;
+.member-name-link {
+    cursor: pointer;
     text-decoration: none;
-    font-weight: bold;
+    color: inherit;
+    display: block;
 }
 
-.member-details a:hover {
-    text-decoration: underline;
-}
-
-/* Animación para que baje suave */
-@keyframes slideDown {
-    from { opacity: 0; transform: translateY(-10px); }
-    to { opacity: 1; transform: translateY(0); }
+.member-card {
+    cursor: pointer; /* Indica que se puede hacer clic en toda la tarjeta */
 }
