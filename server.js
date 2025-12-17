@@ -289,6 +289,31 @@ app.post('/api/auth/reset-confirm', async (req, res) => {
     }
 });
 
+// RUTA DE CAMBIO DIRECTO (Sin correo)
+app.post('/api/auth/cambio-directo', async (req, res) => {
+    const { email, password } = req.body;
+
+    try {
+        // 1. Verificar si el usuario existe
+        const userCheck = await db.query('SELECT id FROM usuarios WHERE email = $1', [email]);
+        
+        if (userCheck.rows.length === 0) {
+            return res.status(404).json({ success: false, error: 'El correo no está registrado.' });
+        }
+
+        // 2. Hashear la nueva contraseña
+        const nuevoHash = await bcrypt.hash(password, 10);
+
+        // 3. Actualizar directamente en la DB
+        await db.query('UPDATE usuarios SET contrasena_hash = $1 WHERE email = $2', [nuevoHash, email]);
+
+        res.json({ success: true, mensaje: 'Contraseña actualizada con éxito.' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, error: 'Error interno del servidor.' });
+    }
+});
+
 app.listen(PORT, () => {
     console.log(`Servidor CATICO en http://localhost:${PORT}`);
 });
