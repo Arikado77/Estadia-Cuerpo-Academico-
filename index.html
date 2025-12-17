@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,6 +9,7 @@
     <link rel="stylesheet" href="CA.css">
     <title>Cuerpo Académico - CA-TICO</title>
 </head>
+
 <body>
 
     <nav>
@@ -32,7 +34,7 @@
     <header>
         <div class="left">
             <h1>Bienvenido a <span><br>TECNOLOGÍAS INMERSIVAS Y CREATIVIDAD PARA LA OPTIMIZACIÓN</span></h1>
-            <p>Un espacio de investigación, colaboración y difusión del conocimiento.</p>
+            <p>Un espacio de investigación, colaboración y difusión del conocimiento.<br>Explora nuestras líneas de investigación, proyectos y noticias.</p>
         </div>
         <img src="img/Gemini_Generated_Image_6fk5kt6fk5kt6fk5.png" alt="Cuerpo Académico">
     </header>
@@ -49,6 +51,7 @@
                     </div>
                     <div class="member-details">
                         <hr>
+                        <h4>Información de Contacto</h4>
                         <p><i class='bx bxl-google'></i> Perfil Google: <a href="https://scholar.google.com/citations?user=4HAFFT0AAAAJ" target="_blank">Ver</a></p>
                         <p><i class='bx bxl-researchgate'></i> ResearchGate: <a href="https://www.researchgate.net/profile/Dynhora-Ramirez-Ochoa" target="_blank">Ver</a></p>
                         <p><i class='bx bxs-file-pdf'></i> CV: <a href="Archivos/perfil-unico(Dynhora-Ramirez).pdf" target="_blank">Descargar</a></p>
@@ -63,6 +66,7 @@
                     </div>
                     <div class="member-details">
                         <hr>
+                        <h4>Información de Contacto</h4>
                         <p><i class='bx bxl-google'></i> Perfil Google: <a href="#" target="_blank">Ver</a></p>
                         <p><i class='bx bxl-researchgate'></i> ResearchGate: <a href="#" target="_blank">Ver</a></p>
                         <p><i class='bx bxs-file-pdf'></i> CV: <a href="archivos/cv-ibet.pdf" target="_blank">Descargar</a></p>
@@ -77,6 +81,7 @@
                     </div>
                     <div class="member-details">
                         <hr>
+                        <h4>Información de Contacto</h4>
                         <p><i class='bx bxl-google'></i> Perfil Google: <a href="https://scholar.google.com/citations?user=NuplKwwAAAAJ" target="_blank">Ver</a></p>
                         <p><i class='bx bxl-researchgate'></i> ResearchGate: <a href="#" target="_blank">Ver</a></p>
                         <p><i class='bx bxs-file-pdf'></i> CV: <a href="Archivos/perfil-unico-Dafnis.pdf" target="_blank">Descargar</a></p>
@@ -88,36 +93,60 @@
         </div>
     </section>
 
+    <section id="about" class="section">
+        <div class="container">
+            <h2>¿Qué es el Cuerpo Académico?</h2>
+            <p>El Cuerpo Académico (CA) es un grupo de profesores de tiempo completo que comparten objetivos y metas académicas comunes...</p>
+        </div>
+    </section>
+
+    <footer id="contacto">
+        <div class="container">
+            <h3>Compartiendo el Conocimiento!</h3>
+            <p>Copyright © 2025 Cuerpo Académico, Todos los Derechos Reservados.</p>
+        </div>
+    </footer>
+
     <script src="Script.js"></script>
     <script src="login.js"></script>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // LÓGICA DE MIEMBROS: Permite que varios estén abiertos al mismo tiempo
+            // LÓGICA DE MIEMBROS: Al picar uno, se abren todos
             const memberCards = document.querySelectorAll('.member-card');
+            const allDetails = document.querySelectorAll('.member-details');
 
             memberCards.forEach(card => {
                 card.addEventListener('click', (e) => {
-                    // Si el clic es en un link real dentro de los detalles, no cerrar/abrir nada
+                    // Si el clic es en un link real (<a>), no cerrar el panel
                     if (e.target.tagName === 'A') return;
 
-                    const details = card.querySelector('.member-details');
-                    
-                    // Solo alternamos la clase 'active' para esta tarjeta específica
-                    details.classList.toggle('active');
+                    // Revisamos si el primero ya está abierto para saber si cerrar o abrir todos
+                    const isAnyActive = allDetails[0].classList.contains('active');
+
+                    allDetails.forEach(detail => {
+                        if (isAnyActive) {
+                            detail.classList.remove('active');
+                        } else {
+                            detail.classList.add('active');
+                        }
+                    });
                 });
             });
 
-            // Lógica de perfil/login (resumida para que funcione)
+            // Lógica de sesión del usuario
             fetch('/api/usuario/perfil')
                 .then(res => res.json())
                 .then(data => {
                     if (data.success) {
-                        const authContainer = document.getElementById('auth-link');
-                        authContainer.innerHTML = `<a href="Perfil.html" class="login-button">Hola, ${data.user.nombre.split(' ')[0]}</a>`;
+                        const authLink = document.getElementById('auth-link');
+                        const firstName = data.user.nombre.split(' ')[0];
+                        authLink.innerHTML = `<a href="Perfil.html" class="login-button">Hola, ${firstName}</a>`;
                     }
-                }).catch(() => {});
+                })
+                .catch(() => {});
         });
     </script>
 </body>
+
 </html>
