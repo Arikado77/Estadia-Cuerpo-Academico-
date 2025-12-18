@@ -139,19 +139,27 @@ app.post('/api/registro', async (req, res) => {
     }
 });
 
-// Perfil (Consulta)
+// Perfil (Consulta) - CORREGIDO
 app.get('/api/usuario/perfil', async (req, res) => {
     const userId = req.session.userId; 
     if (!userId) return res.status(401).json({ success: false, error: 'No autorizado' });
 
     try {
-        const result = await db.query('SELECT nombre, email, universidad, ciudad_estado, linea_investigacion, perfil_google_url, orcid_id, foto_url FROM usuarios WHERE id = $1', [userId]);
+        // Agregamos 'es_admin' a la lista de columnas
+        const result = await db.query(
+            'SELECT nombre, email, universidad, ciudad_estado, linea_investigacion, perfil_google_url, orcid_id, foto_url, es_admin FROM usuarios WHERE id = $1', 
+            [userId]
+        );
+        
+        if (result.rows.length === 0) {
+            return res.status(404).json({ success: false, error: 'Usuario no encontrado' });
+        }
+
         res.json({ success: true, user: result.rows[0] });
     } catch (error) {
+        console.error("Error al obtener perfil:", error);
         res.status(500).json({ success: false });
     }
-    const result = await db.query('SELECT ..., es_admin FROM usuarios WHERE id = $1', [userId]);
-    res.json({ success: true, user: result.rows[0] });
 });
 
 // Actualizar Datos
