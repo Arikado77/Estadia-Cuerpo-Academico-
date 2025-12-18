@@ -202,3 +202,27 @@ body, html {
     margin-bottom: 20px;
     border-radius: 12px;
 }
+
+.file-select-container {
+    margin: 15px 0;
+    text-align: center;
+}
+
+.file-label {
+    display: inline-block;
+    padding: 10px 20px;
+    background: #f0f2f5;
+    border: 2px dashed #ccc;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.file-label:hover {
+    background: #e4e6e9;
+    border-color: #004d80;
+}
+
+#noticia-imagen {
+    display: none; /* Escondemos el botón feo por defecto del navegador */
+}

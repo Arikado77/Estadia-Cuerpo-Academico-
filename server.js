@@ -36,18 +36,15 @@ if (!fs.existsSync(uploadDir)){
     fs.mkdirSync(uploadDir, { recursive: true });
 }
 
-// ===============================================
-// CONFIGURACIÓN DE MULTER
-// ===============================================
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, 'public/uploads/');
-    },
+
+// Configuración de almacenamiento para noticias
+const newsStorage = multer.diskStorage({
+    destination: (req, file, cb) => { cb(null, 'public/uploads/'); },
     filename: (req, file, cb) => {
-        cb(null, 'perfil-' + req.session.userId + path.extname(file.originalname));
+        cb(null, 'noticia-' + Date.now() + path.extname(file.originalname));
     }
 });
-const upload = multer({ storage: storage });
+const uploadNews = multer({ storage: newsStorage });
 
 // ===============================================
 // MIDDLEWARES (Orden Crítico)
@@ -381,6 +378,30 @@ app.delete('/api/noticias/:id', verificarAdmin, async (req, res) => {
         await db.query('DELETE FROM noticias WHERE id = $1', [req.params.id]);
         res.json({ success: true });
     } catch (err) {
+        res.status(500).json({ success: false });
+    }
+});
+
+// RUTA PARA CREAR O EDITAR NOTICIA
+app.post('/api/noticias', verificarAdmin, uploadNews.single('imagen'), async (req, res) => {
+    const { id, titulo, contenido } = req.body;
+    const imagen_url = req.file ? '/uploads/' + req.file.filename : null;
+
+    try {
+        if (id) {
+            // EDITAR
+            if (imagen_url) {
+                await db.query('UPDATE noticias SET titulo=$1, contenido=$2, imagen_url=$3 WHERE id=$4', [titulo, contenido, imagen_url, id]);
+            } else {
+                await db.query('UPDATE noticias SET titulo=$1, contenido=$2 WHERE id=$3', [titulo, contenido, id]);
+            }
+        } else {
+            // CREAR NUEVA
+            await db.query('INSERT INTO noticias (titulo, contenido, imagen_url, autor_id) VALUES ($1, $2, $3, $4)', 
+            [titulo, contenido, imagen_url, req.session.userId]);
+        }
+        res.json({ success: true });
+    } catch (error) {
         res.status(500).json({ success: false });
     }
 });

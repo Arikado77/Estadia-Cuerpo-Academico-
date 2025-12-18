@@ -69,21 +69,53 @@
     <div id="modal-noticia" class="modal" style="display:none;">
         <div class="modal-content">
             <span class="close" onclick="closeModal()">&times;</span>
-            <h3>Nueva Noticia</h3>
+            <h3 id="modal-titulo">Nueva Noticia</h3>
             <form id="form-noticia">
+                <input type="hidden" id="noticia-id">
+                
                 <input type="text" id="noticia-titulo" placeholder="Título de la noticia" required>
                 <textarea id="noticia-contenido" placeholder="Descripción de la noticia" rows="5" required></textarea>
-                <input type="text" id="noticia-imagen" placeholder="URL de la imagen (ej: https://.../foto.jpg)">
-                <button type="submit" class="admin-button">Publicar Noticia</button>
+                
+                <div class="file-select-container">
+                    <label for="noticia-imagen" class="file-label">
+                        <i class='bx bx-image-add'></i> Seleccionar Imagen
+                    </label>
+                    <input type="file" id="noticia-imagen" accept="image/*">
+                    <p id="file-name" style="font-size: 0.8em; color: #666;"></p>
+                </div>
+
+                <button type="submit" id="btn-submit-noticia" class="admin-button">Publicar Noticia</button>
             </form>
         </div>
     </div>
 
     <script src="VerBotonPerfil.js"></script>
     <script>
+    
         // --- FUNCIONES DEL MODAL ---
-        function openModal() { document.getElementById('modal-noticia').style.display = 'block'; }
-        function closeModal() { document.getElementById('modal-noticia').style.display = 'none'; }
+        function openModal() { 
+            document.getElementById('modal-noticia').style.display = 'block'; 
+        }
+
+        function closeModal() { 
+            document.getElementById('modal-noticia').style.display = 'none';
+            // Limpiamos el formulario al cerrar para que no se quede info de una edición
+            document.getElementById('form-noticia').reset();
+            document.getElementById('noticia-id').value = '';
+            document.getElementById('modal-titulo').textContent = "Nueva Noticia";
+            document.getElementById('btn-submit-noticia').textContent = "Publicar Noticia";
+            document.getElementById('file-name').textContent = "";
+        }
+
+        // Función para cargar datos y EDITAR
+        function prepararEdicion(id, titulo, contenido) {
+            document.getElementById('modal-titulo').textContent = "Editar Noticia";
+            document.getElementById('noticia-id').value = id;
+            document.getElementById('noticia-titulo').value = titulo;
+            document.getElementById('noticia-contenido').value = contenido;
+            document.getElementById('btn-submit-noticia').textContent = "Actualizar Noticia";
+            openModal();
+        }
 
         document.addEventListener('DOMContentLoaded', async () => {
             const contenedor = document.getElementById('contenedor-noticias');
@@ -92,13 +124,17 @@
             // 1. Verificar si el usuario es Admin REAL
             const resUser = await fetch('/api/usuario/perfil');
             const userData = await resUser.json();
-            
-            // CAMBIO CLAVE: Validamos que exista éxito Y que el campo es_admin sea true
             const isAdmin = userData.success && userData.user.es_admin === true;
 
-            if (isAdmin) {
-                adminPanel.style.display = 'block';
-            }
+            if (isAdmin) adminPanel.style.display = 'block';
+
+            // Mostrar nombre del archivo al seleccionarlo (Galería)
+            const fileInput = document.getElementById('noticia-imagen');
+            fileInput.onchange = function() {
+                if (this.files[0]) {
+                    document.getElementById('file-name').textContent = "Archivo: " + this.files[0].name;
+                }
+            };
 
             // 2. Cargar Noticias desde la Base de Datos
             async function cargarNoticias() {
@@ -114,9 +150,13 @@
                     data.noticias.forEach(n => {
                         const div = document.createElement('div');
                         div.className = 'noticia-item';
-                        // El botón de basura solo se inyecta si isAdmin es true
                         div.innerHTML = `
-                            ${isAdmin ? `<div class="edit-buttons"><button class="delete-button" onclick="eliminarNoticia(${n.id})">🗑️</button></div>` : ''}
+                            ${isAdmin ? `
+                                <div class="edit-buttons">
+                                    <button class="edit-button" onclick="prepararEdicion(${n.id}, \`${n.titulo}\`, \`${n.contenido}\`)">✏️</button>
+                                    <button class="delete-button" onclick="eliminarNoticia(${n.id})">🗑️</button>
+                                </div>
+                            ` : ''}
                             ${n.imagen_url ? `<img src="${n.imagen_url}" style="width:100%; border-radius:8px; margin-bottom:15px; max-height:400px; object-fit:cover;">` : ''}
                             <h3>${n.titulo}</h3>
                             <p>${n.contenido}</p>
@@ -132,28 +172,31 @@
 
             cargarNoticias();
 
-            // 3. Manejo del Formulario
+            // 3. Manejo del Formulario (SUBIR ARCHIVO Y DATOS)
             document.getElementById('form-noticia').onsubmit = async (e) => {
                 e.preventDefault();
-                const body = {
-                    titulo: document.getElementById('noticia-titulo').value,
-                    contenido: document.getElementById('noticia-contenido').value,
-                    imagen_url: document.getElementById('noticia-imagen').value
-                };
+                
+                const formData = new FormData(); // Usamos FormData para enviar el archivo
+                formData.append('id', document.getElementById('noticia-id').value);
+                formData.append('titulo', document.getElementById('noticia-titulo').value);
+                formData.append('contenido', document.getElementById('noticia-contenido').value);
+                
+                const foto = document.getElementById('noticia-imagen').files[0];
+                if (foto) {
+                    formData.append('imagen', foto); // 'imagen' debe coincidir con uploadNews.single('imagen') en server.js
+                }
 
                 const res = await fetch('/api/noticias', {
                     method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify(body)
+                    body: formData // No enviamos headers de JSON, el navegador pone los de archivo automáticamente
                 });
 
                 if (res.ok) {
-                    alert("¡Noticia publicada!");
+                    alert("¡Operación exitosa!");
                     closeModal();
                     location.reload();
                 } else {
-                    const errorData = await res.json();
-                    alert("Error: " + (errorData.error || "No tienes permisos."));
+                    alert("Error al procesar la noticia.");
                 }
             };
         });
@@ -161,13 +204,10 @@
         async function eliminarNoticia(id) {
             if(confirm("¿Seguro que quieres borrar esta noticia?")) {
                 const res = await fetch(`/api/noticias/${id}`, { method: 'DELETE' });
-                if(res.ok) {
-                    location.reload();
-                } else {
-                    alert("No se pudo eliminar.");
-                }
+                if(res.ok) location.reload();
             }
         }
+
     </script>
 
     <style>
