@@ -11,39 +11,28 @@
 
     <main class="profile-container">
         
-        <h1 class="profile-title">Mi Perfil Académico</h1>
+        <div class="profile-user-header" style="display: flex; align-items: center; justify-content: space-between; background: white; padding: 25px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+            <div style="display: flex; align-items: center; gap: 20px;">
+                <img src="img/avatars/1.jpg" id="display-photo" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 3px solid #004d80;">
+                <div>
+                    <h1 id="user-name-title" style="margin: 0; font-size: 1.8rem;">Cargando...</h1>
+                    <p style="margin: 0; color: #666;"><i class='bx bxs-badge-check'></i> Miembro del Cuerpo Académico</p>
+                </div>
+            </div>
+            <button id="btn-toggle-avatars" class="action-btn-primary" style="width: auto; padding: 10px 20px;">
+                <i class='bx bx-refresh'></i> Cambiar Foto
+            </button>
+        </div>
 
         <div class="profile-layout">
             
             <div class="profile-column profile-sidebar">
                 <div class="profile-card profile-info-card">
-                    <h2><i class='bx bxs-user-circle'></i> Miembro del CA</h2>
-                    
-                    <div class="avatar-selection">
+                    <div id="section-avatars" style="display: none; border-bottom: 1px solid #eee; padding-bottom: 20px; margin-bottom: 20px;">
                         <h3>Selecciona tu Avatar</h3>
-                        <div class="avatar-grid" id="avatar-grid">
-                            </div>
+                        <div class="avatar-grid" id="avatar-grid"></div>
                         <button id="save-avatar-btn" class="btn-primary">Confirmar Avatar</button>
                     </div>
-
-                    <style>
-                        .avatar-grid {
-                            display: grid;
-                            grid-template-columns: repeat(5, 1fr);
-                            gap: 10px;
-                            margin: 20px 0;
-                        }
-                        .avatar-item {
-                            width: 60px;
-                            height: 60px;
-                            cursor: pointer;
-                            border: 3px solid transparent;
-                            border-radius: 50%;
-                            transition: 0.3s;
-                        }
-                        .avatar-item:hover { transform: scale(1.1); }
-                        .avatar-item.selected { border-color: #007bff; background: #e7f1ff; }
-                    </style>
 
                     <div class="basic-info-display">
                         <p><strong>Usuario:</strong> <span id="user-name-display">Cargando...</span></p>
@@ -62,11 +51,9 @@
                         <li><i class='bx bx-buildings'></i> <strong>Adscripción:</strong> <span id="preview-uni">...</span></li>
                     </ul>
                 </div>
-                
             </div>
 
             <div class="profile-column profile-main-content">
-                
                 <div class="profile-card editable-data-card">
                     <h2><i class='bx bxs-edit-alt'></i> Tus Datos</h2>
                     <form id="perfil-form">
@@ -75,28 +62,23 @@
                                 <label for="full-name">Nombre Completo</label>
                                 <input type="text" id="full-name" placeholder="Tu nombre" required>
                             </div>
-                            
                             <div class="form-group">
                                 <label for="university">Universidad / Institución</label>
                                 <input type="text" id="university" placeholder="Ej. UTCH">
                             </div>
-                            
                             <div class="form-group">
                                 <label for="city-state">Ciudad y Estado</label>
                                 <input type="text" id="city-state" placeholder="Ej. Chihuahua, Chih.">
                             </div>
-
                             <div class="form-group">
                                 <label for="research-line">Línea de Investigación</label>
                                 <input type="text" id="research-line" placeholder="Ej. Seguridad Informática">
                             </div>
                         </div>
-
                         <div class="form-group">
                             <label for="bio">Resumen Profesional (Opcional)</label>
-                            <textarea id="bio" rows="3" placeholder="Breve descripción de tu trayectoria..."></textarea>
+                            <textarea id="bio" rows="3" placeholder="Breve descripción..."></textarea>
                         </div>
-
                         <h3><i class='bx bx-link-external'></i> Enlaces Académicos</h3>
                         <div class="form-grid">
                             <div class="form-group">
@@ -108,16 +90,13 @@
                                 <input type="url" id="google-profile" placeholder="https://scholar.google.com/...">
                             </div>
                         </div>
-
                         <button type="submit" class="action-btn-primary"><i class='bx bxs-save'></i> Actualizar Información</button>
                     </form>
                 </div>
-
             </div>
         </div>
     </main>
 
     <script src="Perfil.js"></script>
-    <script src="server.js"></script>
 </body>
 </html>
