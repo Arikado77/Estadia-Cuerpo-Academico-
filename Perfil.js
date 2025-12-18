@@ -4,7 +4,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     const btnToggle = document.getElementById('btn-toggle-avatars');
     let selectedAvatar = '';
 
+    // ===============================================
     // 1. CARGAR DATOS DEL PERFIL
+    // ===============================================
     async function cargarDatosPerfil() {
         try {
             const response = await fetch('/api/usuario/perfil');
@@ -24,7 +26,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     document.getElementById('display-photo').src = user.foto_url;
                 }
 
-                // Llenar el resto de tus inputs (TUS DATOS)
+                // Llenar inputs de información
                 document.getElementById('university').value = user.universidad || '';
                 document.getElementById('city-state').value = user.ciudad_estado || '';
                 document.getElementById('research-line').value = user.linea_investigacion || '';
@@ -44,7 +46,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
     cargarDatosPerfil();
 
-    // 2. MOSTRAR / OCULTAR MONITOS
+    // ===============================================
+    // 2. MOSTRAR / OCULTAR SECCIÓN DE AVATARES
+    // ===============================================
     btnToggle.onclick = () => {
         if (sectionAvatars.style.display === 'none') {
             sectionAvatars.style.display = 'block';
@@ -55,30 +59,39 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     };
 
-    // 3. CREAR LOS MONITOS (Asegurando .jpg)
-    for (let i = 1; i <= 10; i++) {
+    // ===============================================
+    // 3. GENERAR LOS AVATARES (Con tus nombres reales)
+    // ===============================================
+    // He puesto los nombres exactos que vi en tu captura de archivos
+    const misAvatars = [
+        '7309681.jpg', '9334175.jpg', '9434619.jpg', '9434937.jpg', 
+        '9439779.jpg', '9440461.jpg', '9720026.jpg', '9723580.jpg', 
+        '10491830.jpg', '10491843.jpg', '11475224.jpg'
+    ];
+
+    misAvatars.forEach(nombre => {
         const img = document.createElement('img');
-        img.src = `/img/avatars/${i}.jpg`; // CORRECCIÓN .JPG
+        img.src = `/img/avatars/${nombre}`; 
         img.className = 'avatar-item';
         
-        // Si falla el JPG, intentar PNG por si acaso
+        // Manejo de error por si acaso
         img.onerror = function() {
-            if (!this.src.endsWith('.jpg')) {
-                this.src = `/img/avatars/${i}.jpg`;
-            }
+            this.style.display = 'none';
         };
 
         img.onclick = () => {
             document.querySelectorAll('.avatar-item').forEach(el => el.classList.remove('selected'));
             img.classList.add('selected');
-            selectedAvatar = img.src;
+            selectedAvatar = img.src; // Guardamos la ruta completa para la DB
         };
         grid.appendChild(img);
-    }
+    });
 
-    // 4. GUARDAR MONITO
+    // ===============================================
+    // 4. GUARDAR SELECCIÓN DE AVATAR
+    // ===============================================
     document.getElementById('save-avatar-btn').onclick = async () => {
-        if (!selectedAvatar) return alert("Selecciona un monito primero");
+        if (!selectedAvatar) return alert("Selecciona un avatar primero");
 
         const res = await fetch('/api/usuario/actualizar-avatar', {
             method: 'POST',
@@ -91,10 +104,14 @@ document.addEventListener('DOMContentLoaded', async () => {
             document.getElementById('display-photo').src = selectedAvatar;
             sectionAvatars.style.display = 'none';
             btnToggle.innerHTML = "<i class='bx bx-refresh'></i> Cambiar Foto";
+        } else {
+            alert("Error al guardar el avatar.");
         }
     };
 
-    // 5. TU FORMULARIO DE ACTUALIZAR DATOS (INTACTO)
+    // ===============================================
+    // 5. FORMULARIO DE ACTUALIZAR DATOS
+    // ===============================================
     document.getElementById('perfil-form').onsubmit = async (e) => {
         e.preventDefault();
         const datos = {
@@ -114,15 +131,19 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         if (res.ok) {
             alert("✅ Información actualizada");
+            // Actualizar textos dinámicos sin recargar
             document.getElementById('user-name-title').textContent = datos.nombre;
+            document.getElementById('user-name-display').textContent = datos.nombre;
             document.getElementById('preview-line').textContent = datos.linea_investigacion;
             document.getElementById('preview-uni').textContent = datos.universidad;
         }
     };
 
-    // 6. LOGOUT
+    // ===============================================
+    // 6. CERRAR SESIÓN
+    // ===============================================
     document.getElementById('logout-btn').onclick = async () => {
-        if (confirm("¿Cerrar sesión?")) {
+        if (confirm("¿Estás seguro de que quieres cerrar sesión?")) {
             await fetch('/api/logout', { method: 'POST' });
             window.location.href = 'login.html';
         }
