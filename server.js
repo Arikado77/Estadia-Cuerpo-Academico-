@@ -45,14 +45,21 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage: storage }); // Esta es la variable 'upload' que faltaba
 
-// 2. Almacenamiento para Noticias (Galería)
+// Busca esta parte y déjala así:
 const newsStorage = multer.diskStorage({
     destination: (req, file, cb) => { cb(null, 'public/uploads/'); },
     filename: (req, file, cb) => {
         cb(null, 'noticia-' + Date.now() + path.extname(file.originalname));
     }
 });
-const uploadNews = multer({ storage: newsStorage });
+
+const uploadNews = multer({ 
+    storage: newsStorage,
+    limits: { 
+        fileSize: 20 * 1024 * 1024, // 20 MB en bytes
+        fieldSize: 20 * 1024 * 1024 // Para que aguante textos largos con fotos
+    } 
+});
 
 // ===============================================
 // MIDDLEWARES (Orden Crítico)
