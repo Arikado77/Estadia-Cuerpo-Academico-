@@ -189,7 +189,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // 1. Crear los 10 monitos
     for (let i = 1; i <= 10; i++) {
         const img = document.createElement('img');
-        img.src = `img/avatars/${i}.jpg`;
+        img.src = `img/avatars/${i}.png`;
         img.className = 'avatar-item';
         img.onclick = () => {
             // Quitar selección a otros
