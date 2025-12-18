@@ -58,13 +58,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     // 3. CREAR LOS MONITOS (Asegurando .jpg)
     for (let i = 1; i <= 10; i++) {
         const img = document.createElement('img');
-        img.src = `img/avatars/${i}.jpg`; // CORRECCIÓN .JPG
+        img.src = `/img/avatars/${i}.jpg`; // CORRECCIÓN .JPG
         img.className = 'avatar-item';
         
         // Si falla el JPG, intentar PNG por si acaso
         img.onerror = function() {
-            if (!this.src.endsWith('.png')) {
-                this.src = `img/avatars/${i}.png`;
+            if (!this.src.endsWith('.jpg')) {
+                this.src = `/img/avatars/${i}.jpg`;
             }
         };
 
