@@ -319,3 +319,48 @@ body {
         flex-direction: column;
     }
 }
+
+/* Contenedor de la cuadrícula */
+.avatar-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); /* Se ajusta solo */
+    gap: 15px;
+    margin: 20px 0;
+    padding: 10px;
+    max-height: 300px; /* Por si son muchos, para que no estiren toda la página */
+    overflow-y: auto;  /* Agrega scroll si sobrepasan el tamaño */
+}
+
+/* Estilo de cada monito */
+.avatar-item {
+    width: 70px;         /* Tamaño fijo pequeño */
+    height: 70px;        /* Tamaño fijo pequeño */
+    object-fit: cover;   /* Para que no se estiren feo */
+    border-radius: 50%;  /* ¡Círculos perfectos! */
+    cursor: pointer;
+    border: 3px solid #eee;
+    transition: all 0.3s ease;
+    background-color: #f9f9f9;
+}
+
+/* Efecto cuando pasas el mouse */
+.avatar-item:hover {
+    transform: scale(1.1);
+    border-color: #004d80;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+/* Cuando seleccionas uno */
+.avatar-item.selected {
+    border-color: #007bff;
+    background-color: #e7f1ff;
+    box-shadow: 0 0 10px rgba(0, 123, 255, 0.5);
+}
+
+.avatar-grid::-webkit-scrollbar {
+    width: 6px;
+}
+.avatar-grid::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 10px;
+}
