@@ -32,6 +32,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 document.getElementById('research-line').value = user.linea_investigacion || '';
                 document.getElementById('google-profile').value = user.perfil_google_url || '';
                 document.getElementById('orcid').value = user.orcid_id || '';
+                document.getElementById('bio').value = user.resumen_profesional || '';
                 
                 // Vista Previa
                 document.getElementById('preview-line').textContent = user.linea_investigacion || 'No definida';
@@ -110,42 +111,42 @@ document.addEventListener('DOMContentLoaded', async () => {
     };
 
     // ===============================================
-    // 5. FORMULARIO DE ACTUALIZAR DATOS
+    // 5. FORMULARIO DE ACTUALIZAR DATOS (CORREGIDO)
     // ===============================================
     document.getElementById('perfil-form').onsubmit = async (e) => {
         e.preventDefault();
+        
+        // Agregamos 'resumen_profesional' a la lista para que se guarde
         const datos = {
             nombre: document.getElementById('full-name').value,
             universidad: document.getElementById('university').value,
             ciudad_estado: document.getElementById('city-state').value,
             linea_investigacion: document.getElementById('research-line').value,
             perfil_google_url: document.getElementById('google-profile').value,
-            orcid_id: document.getElementById('orcid').value
+            orcid_id: document.getElementById('orcid').value,
+            resumen_profesional: document.getElementById('bio').value // <-- ESTA LÍNEA FALTABA
         };
 
-        const res = await fetch('/api/usuario/actualizar', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(datos)
-        });
+        try {
+            const res = await fetch('/api/usuario/actualizar', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(datos)
+            });
 
-        if (res.ok) {
-            alert("✅ Información actualizada");
-            // Actualizar textos dinámicos sin recargar
-            document.getElementById('user-name-title').textContent = datos.nombre;
-            document.getElementById('user-name-display').textContent = datos.nombre;
-            document.getElementById('preview-line').textContent = datos.linea_investigacion;
-            document.getElementById('preview-uni').textContent = datos.universidad;
+            if (res.ok) {
+                alert("✅ Información actualizada correctamente");
+                // Actualizamos los textos de la página
+                document.getElementById('user-name-title').textContent = datos.nombre;
+                document.getElementById('user-name-display').textContent = datos.nombre;
+                document.getElementById('preview-line').textContent = datos.linea_investigacion;
+                document.getElementById('preview-uni').textContent = datos.universidad;
+            } else {
+                const errorData = await res.json();
+                alert("❌ Error: " + (errorData.error || "No se pudo actualizar"));
+            }
+        } catch (error) {
+            console.error("Error en la petición:", error);
+            alert("❌ Hubo un error de conexión.");
         }
-    };
-
-    // ===============================================
-    // 6. CERRAR SESIÓN
-    // ===============================================
-    document.getElementById('logout-btn').onclick = async () => {
-        if (confirm("¿Estás seguro de que quieres cerrar sesión?")) {
-            await fetch('/api/logout', { method: 'POST' });
-            window.location.href = 'login.html';
-        }
-    };
-});
+    }});
