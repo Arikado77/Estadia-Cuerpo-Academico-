@@ -59,8 +59,8 @@ async function registrarUsuario(datosRegistro) {
 // ===============================================
 async function loginUsuario(email, contrasena) {
     try {
-        // 1. Buscar al usuario por email
-        const queryText = 'SELECT contrasena_hash, id FROM usuarios WHERE email = $1';
+        // 1. Buscamos al usuario incluyendo el campo es_admin
+        const queryText = 'SELECT contrasena_hash, id, es_admin FROM usuarios WHERE email = $1';
         const res = await db.query(queryText, [email]);
 
         if (res.rows.length === 0) {
@@ -73,7 +73,12 @@ async function loginUsuario(email, contrasena) {
         const match = await bcrypt.compare(contrasena, usuario.contrasena_hash);
 
         if (match) {
-            return { success: true, userId: usuario.id };
+            // Devolvemos success, el ID y el valor de es_admin
+            return { 
+                success: true, 
+                userId: usuario.id, 
+                esAdmin: usuario.es_admin // <--- IMPORTANTE: Esto lo leerá server.js
+            };
         } else {
             return { success: false, error: 'Contraseña incorrecta.' };
         }

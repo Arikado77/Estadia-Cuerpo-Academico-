@@ -72,6 +72,14 @@ function verificarAutenticacion(req, res, next) {
     }
 }
 
+function verificarAdmin(req, res, next) {
+    if (req.session.isAuthenticated && req.session.esAdmin === true) {
+        next();
+    } else {
+        res.status(403).json({ success: false, error: "Acceso denegado: Se requieren permisos de Admin" });
+    }
+}
+
 // ===============================================
 // RUTAS DE PÁGINAS (PROTEGIDAS Y PÚBLICAS)
 // ===============================================
@@ -106,7 +114,8 @@ app.post('/api/login', async (req, res) => {
 
     if (resultado.success) {
         req.session.userId = resultado.userId; 
-        req.session.isAuthenticated = true; 
+        req.session.isAuthenticated = true;
+        req.session.esAdmin = resultado.esAdmin;
         
         const redirectUrl = req.session.originalUrl || '/index.html';
         delete req.session.originalUrl;
@@ -141,6 +150,8 @@ app.get('/api/usuario/perfil', async (req, res) => {
     } catch (error) {
         res.status(500).json({ success: false });
     }
+    const result = await db.query('SELECT ..., es_admin FROM usuarios WHERE id = $1', [userId]);
+    res.json({ success: true, user: result.rows[0] });
 });
 
 // Actualizar Datos
@@ -347,31 +358,22 @@ app.get('/api/noticias', async (req, res) => {
     }
 });
 
-// 2. Crear una nueva noticia (Solo logueados)
-app.post('/api/noticias', async (req, res) => {
-    if (!req.session.isAuthenticated) {
-        return res.status(401).json({ success: false, error: 'Inicia sesión para publicar' });
-    }
-
+// --- PUBLICAR NOTICIA (Solo Admins) ---
+app.post('/api/noticias', verificarAdmin, async (req, res) => {
     const { titulo, contenido, imagen_url } = req.body;
-    const autor_id = req.session.userId;
-
     try {
         await db.query(
             'INSERT INTO noticias (titulo, contenido, imagen_url, autor_id) VALUES ($1, $2, $3, $4)',
-            [titulo, contenido, imagen_url, autor_id]
+            [titulo, contenido, imagen_url, req.session.userId]
         );
-        res.json({ success: true, mensaje: '¡Noticia publicada con éxito!' });
+        res.json({ success: true });
     } catch (error) {
-        console.error("Error al insertar noticia:", error);
-        res.status(500).json({ success: false, error: 'Error al guardar la noticia' });
+        res.status(500).json({ success: false });
     }
 });
 
-// 3. Eliminar noticia (Ya la tenías, pero asegúrate de que esté así)
-app.delete('/api/noticias/:id', async (req, res) => {
-    if (!req.session.isAuthenticated) return res.status(401).json({ success: false });
-    
+// --- ELIMINAR NOTICIA (Solo Admins) ---
+app.delete('/api/noticias/:id', verificarAdmin, async (req, res) => {
     const { id } = req.params;
     try {
         await db.query('DELETE FROM noticias WHERE id = $1', [id]);
