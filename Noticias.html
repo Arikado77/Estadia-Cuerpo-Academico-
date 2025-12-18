@@ -80,7 +80,6 @@
     </div>
 
     <script src="VerBotonPerfil.js"></script>
-    <script src="server.js"></script>
     <script>
         // --- FUNCIONES DEL MODAL ---
         function openModal() { document.getElementById('modal-noticia').style.display = 'block'; }
@@ -90,12 +89,16 @@
             const contenedor = document.getElementById('contenedor-noticias');
             const adminPanel = document.getElementById('admin-panel');
 
-            // 1. Verificar si el usuario es Admin para mostrar el panel
+            // 1. Verificar si el usuario es Admin REAL
             const resUser = await fetch('/api/usuario/perfil');
             const userData = await resUser.json();
-            const isAdmin = userData.success; // Si está logueado, es admin para este caso
+            
+            // CAMBIO CLAVE: Validamos que exista éxito Y que el campo es_admin sea true
+            const isAdmin = userData.success && userData.user.es_admin === true;
 
-            if (isAdmin) adminPanel.style.display = 'block';
+            if (isAdmin) {
+                adminPanel.style.display = 'block';
+            }
 
             // 2. Cargar Noticias desde la Base de Datos
             async function cargarNoticias() {
@@ -104,15 +107,23 @@
                 
                 if (data.success) {
                     contenedor.innerHTML = '';
+                    if(data.noticias.length === 0) {
+                        contenedor.innerHTML = '<p style="text-align:center;">No hay noticias que mostrar.</p>';
+                        return;
+                    }
                     data.noticias.forEach(n => {
                         const div = document.createElement('div');
                         div.className = 'noticia-item';
+                        // El botón de basura solo se inyecta si isAdmin es true
                         div.innerHTML = `
                             ${isAdmin ? `<div class="edit-buttons"><button class="delete-button" onclick="eliminarNoticia(${n.id})">🗑️</button></div>` : ''}
-                            ${n.imagen_url ? `<img src="${n.imagen_url}" style="width:100%; border-radius:8px; margin-bottom:15px;">` : ''}
+                            ${n.imagen_url ? `<img src="${n.imagen_url}" style="width:100%; border-radius:8px; margin-bottom:15px; max-height:400px; object-fit:cover;">` : ''}
                             <h3>${n.titulo}</h3>
                             <p>${n.contenido}</p>
-                            <span class="news-date">${new Date(n.fecha_creacion).toLocaleDateString()}</span>
+                            <div style="margin-top:10px; font-size:0.8em; color:#888;">
+                                <span><i class='bx bx-calendar'></i> ${new Date(n.fecha_creacion).toLocaleDateString()}</span>
+                                <span style="margin-left:15px;"><i class='bx bx-user'></i> ${n.autor || 'Sistema'}</span>
+                            </div>
                         `;
                         contenedor.appendChild(div);
                     });
@@ -137,28 +148,36 @@
                 });
 
                 if (res.ok) {
-                    alert("Noticia publicada!");
+                    alert("¡Noticia publicada!");
                     closeModal();
                     location.reload();
+                } else {
+                    const errorData = await res.json();
+                    alert("Error: " + (errorData.error || "No tienes permisos."));
                 }
             };
         });
 
         async function eliminarNoticia(id) {
             if(confirm("¿Seguro que quieres borrar esta noticia?")) {
-                await fetch(`/api/noticias/${id}`, { method: 'DELETE' });
-                location.reload();
+                const res = await fetch(`/api/noticias/${id}`, { method: 'DELETE' });
+                if(res.ok) {
+                    location.reload();
+                } else {
+                    alert("No se pudo eliminar.");
+                }
             }
         }
     </script>
 
     <style>
-        /* Estilos rápidos para el modal */
         .modal { position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); }
         .modal-content { background: white; margin: 10% auto; padding: 30px; border-radius: 10px; width: 50%; position: relative; }
         .modal-content input, .modal-content textarea { width: 100%; margin-bottom: 15px; padding: 10px; border: 1px solid #ccc; border-radius: 5px; }
         .close { position: absolute; top: 10px; right: 20px; font-size: 30px; cursor: pointer; }
         .news-date { font-size: 0.8em; color: #888; }
+        /* Evita que imágenes gigantes rompan el diseño */
+        .noticia-item img { max-width: 100%; height: auto; display: block; }
     </style>
 </body>
 </html>

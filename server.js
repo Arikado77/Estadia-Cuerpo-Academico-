@@ -342,23 +342,18 @@ app.post('/api/usuario/actualizar-avatar', async (req, res) => {
 // API - GESTIÓN DE NOTICIAS (DINÁMICO)
 // ===============================================
 
-// 1. Obtener todas las noticias (Público)
+// --- OBTENER NOTICIAS (Todos pueden ver) ---
 app.get('/api/noticias', async (req, res) => {
     try {
-        const result = await db.query(`
-            SELECT n.id, n.titulo, n.contenido, n.imagen_url, n.fecha_creacion, u.nombre as autor 
-            FROM noticias n 
-            LEFT JOIN usuarios u ON n.autor_id = u.id 
-            ORDER BY n.fecha_creacion DESC
-        `);
+        const result = await db.query('SELECT * FROM noticias ORDER BY fecha_creacion DESC');
         res.json({ success: true, noticias: result.rows });
     } catch (error) {
-        console.error("Error al obtener noticias:", error);
-        res.status(500).json({ success: false, error: 'Error al cargar noticias' });
+        res.status(500).json({ success: false });
     }
 });
 
-// --- PUBLICAR NOTICIA (Solo Admins) ---
+// --- PUBLICAR NOTICIA (SOLO ADMINS) ---
+// Aquí usamos 'verificarAdmin' como filtro
 app.post('/api/noticias', verificarAdmin, async (req, res) => {
     const { titulo, contenido, imagen_url } = req.body;
     try {
@@ -372,11 +367,10 @@ app.post('/api/noticias', verificarAdmin, async (req, res) => {
     }
 });
 
-// --- ELIMINAR NOTICIA (Solo Admins) ---
+// --- ELIMINAR NOTICIA (SOLO ADMINS) ---
 app.delete('/api/noticias/:id', verificarAdmin, async (req, res) => {
-    const { id } = req.params;
     try {
-        await db.query('DELETE FROM noticias WHERE id = $1', [id]);
+        await db.query('DELETE FROM noticias WHERE id = $1', [req.params.id]);
         res.json({ success: true });
     } catch (err) {
         res.status(500).json({ success: false });
