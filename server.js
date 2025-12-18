@@ -45,7 +45,7 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage: storage }); // Esta es la variable 'upload' que faltaba
 
-// Busca esta parte y déjala así:
+// Configuración de almacenamiento para noticias
 const newsStorage = multer.diskStorage({
     destination: (req, file, cb) => { cb(null, 'public/uploads/'); },
     filename: (req, file, cb) => {
@@ -53,14 +53,14 @@ const newsStorage = multer.diskStorage({
     }
 });
 
+// AUMENTAR LÍMITES AQUÍ:
 const uploadNews = multer({ 
     storage: newsStorage,
     limits: { 
-        fileSize: 20 * 1024 * 1024, // 20 MB en bytes
-        fieldSize: 20 * 1024 * 1024 // Para que aguante textos largos con fotos
+        fileSize: 10 * 1024 * 1024, // 10MB máximo por foto
+        fieldSize: 10 * 1024 * 1024 
     } 
 });
-
 // ===============================================
 // MIDDLEWARES (Orden Crítico)
 // ===============================================
@@ -71,8 +71,8 @@ app.use(session({
     cookie: { secure: false } 
 }));
 
-app.use(express.json({ limit: '20mb' })); 
-app.use(express.urlencoded({ limit: '20mb', extended: true }));
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ limit: '10mb', extended: true }));
 
 function verificarAutenticacion(req, res, next) {
     if (req.session.isAuthenticated) {
