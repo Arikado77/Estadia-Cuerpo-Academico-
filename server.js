@@ -47,7 +47,10 @@ const upload = multer({ storage: storage }); // Esta es la variable 'upload' que
 
 // Configuración de almacenamiento para noticias
 const newsStorage = multer.diskStorage({
-    destination: (req, file, cb) => { cb(null, 'public/uploads/'); },
+    destination: (req, file, cb) => { 
+        // Asegúrate de que esta ruta sea correcta según tu estructura
+        cb(null, 'public/uploads/'); 
+    },
     filename: (req, file, cb) => {
         cb(null, 'noticia-' + Date.now() + path.extname(file.originalname));
     }
