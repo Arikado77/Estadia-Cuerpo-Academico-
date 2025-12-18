@@ -226,3 +226,18 @@ body, html {
 #noticia-imagen {
     display: none; /* Escondemos el botón feo por defecto del navegador */
 }
+
+.news-gallery {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Dos columnas */
+    gap: 10px;
+    margin-top: 15px;
+}
+.news-gallery img:first-child {
+    grid-column: span 2; /* La primera foto sale a todo lo ancho */
+}
+.news-gallery img {
+    width: 100%;
+    border-radius: 8px;
+    object-fit: cover;
+}

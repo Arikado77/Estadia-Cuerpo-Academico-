@@ -255,29 +255,32 @@ app.get('/api/noticias', async (req, res) => {
 });
 
 // RUTA ÚNICA PARA CREAR Y EDITAR (Soporta Galería)
-app.post('/api/noticias', verificarAdmin, uploadNews.single('imagen'), async (req, res) => {
+app.post('/api/noticias', verificarAdmin, uploadNews.array('imagenes', 3), async (req, res) => {
     const { id, titulo, contenido } = req.body;
-    const imagen_url = req.file ? '/uploads/' + req.file.filename : null;
+    
+    // req.files ahora es un arreglo con las fotos subidas
+    const fotos = req.files || [];
+    const url1 = fotos[0] ? '/uploads/' + fotos[0].filename : null;
+    const url2 = fotos[1] ? '/uploads/' + fotos[1].filename : null;
+    const url3 = fotos[2] ? '/uploads/' + fotos[2].filename : null;
 
     try {
-        // MODO EDICIÓN
-        if (id && id !== "" && id !== "undefined") {
-            if (imagen_url) {
-                await db.query('UPDATE noticias SET titulo=$1, contenido=$2, imagen_url=$3 WHERE id=$4', [titulo, contenido, imagen_url, id]);
-            } else {
-                await db.query('UPDATE noticias SET titulo=$1, contenido=$2 WHERE id=$3', [titulo, contenido, id]);
-            }
-            return res.json({ success: true, mensaje: "Actualizada" });
-        } 
-        // MODO CREACIÓN
-        else {
-            await db.query('INSERT INTO noticias (titulo, contenido, imagen_url, autor_id) VALUES ($1, $2, $3, $4)', 
-            [titulo, contenido, imagen_url, req.session.userId]);
-            return res.json({ success: true, mensaje: "Creada" });
+        if (id && id !== "undefined") {
+            // Lógica de UPDATE (puedes decidir si sobreescribir todas o solo las nuevas)
+            await db.query(
+                'UPDATE noticias SET titulo=$1, contenido=$2, imagen_url=$3, imagen_url2=$4, imagen_url3=$5 WHERE id=$6',
+                [titulo, contenido, url1, url2, url3, id]
+            );
+        } else {
+            // Lógica de INSERT
+            await db.query(
+                'INSERT INTO noticias (titulo, contenido, imagen_url, imagen_url2, imagen_url3, autor_id) VALUES ($1, $2, $3, $4, $5, $6)',
+                [titulo, contenido, url1, url2, url3, req.session.userId]
+            );
         }
+        res.json({ success: true });
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ success: false });
+        res.status(500).json({ success: false, error: error.message });
     }
 });
 
